@@ -1,0 +1,58 @@
+.playlistMenuItem{
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  justify-content: space-between;
+  padding: 15px 15px 15px 45px;
+}
+.playlistMenuItem:hover{
+  background-color: rgb(41, 41, 41);
+  color: #00d9ff;
+}
+.playlistMenuItemLeft{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+.playlistMenuItemRight{
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+}
+.playlistMenuItemLeft button, .playlistMenuItemRight button{
+  display: flex;
+  flex-wrap: wrap;
+  hyphens: auto;
+  max-width: 150px;
+  border: none;
+  outline: none;
+  font-size: medium;
+  font-family: 'Raleway', sans-serif;
+  text-align: left;
+  color: lightgray;
+  background-color: transparent;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+.renamePlaylistField{
+  background-color: transparent;
+  color: white;
+  font-family: 'Raleway', sans-serif;
+  border: 1px solid white;
+  padding: 5px;
+  width: 105px;
+}
+.playlistMenuItemLeft button:hover, .playlistMenuItemLeft button:focus{
+  color: #00d9ff;
+  cursor: pointer;
+}
+.confirmRename:hover, .confirmRename:focus{
+  color: #00ff15;
+  cursor: pointer;
+}
+.cancelRename:hover, .cancelRename:focus{
+  color: #ff3300;
+  cursor: pointer;
+}
