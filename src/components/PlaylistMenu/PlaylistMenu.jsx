@@ -18,9 +18,13 @@ const PlaylistMenu = () => {
   const [menuCoordinates, setMenuCoordinates] = useState({x: 0, y: 0})
   const [enableRenameMode, setEnableRenameMode] = useState(false)
   const [renameRequestID, setRenameRequestID] = useState("")
+  const [searchEntry, setSearchEntry] = useState("")
   const targetPlaylistRef = useRef("")
   
-  const handleSearch = (e) => setDropdownOpened(e.target.value != '' ? true : dropdownOpened)
+  const handleSearch = (e) => {
+    setSearchEntry(e.target.value)
+    setDropdownOpened(e.target.value != '' ? true : dropdownOpened)
+  }
 
   const renameDuplicate = (name) => {
     let checkCount = 0
@@ -51,6 +55,14 @@ const PlaylistMenu = () => {
   }
 
   const clearRenameRequestID = () => setRenameRequestID("")
+
+  const getDeleteRequest = (reqID) => {
+    const name = reqID.split('_')[1]
+    deletePlaylist(name)
+    console.log("Deleting playlist:", name)
+  }
+
+  const deletePlaylist = (name) => setTotalPlaylists(totalPlaylists.filter((n) => n != name))
   
   return (
     <aside className="playlistMenu">
@@ -98,7 +110,7 @@ const PlaylistMenu = () => {
         </div>
       </div>
       <div className="playlistContainer">
-        {totalPlaylists.map((name) => dropdownOpened && 
+        {totalPlaylists.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
           <PlaylistMenuItem
             key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
             name={name}
@@ -113,6 +125,7 @@ const PlaylistMenu = () => {
           yPos={menuCoordinates.y} 
           targetElementID={targetPlaylistRef.current !== '' ? targetPlaylistRef.current.id : ""}
           getRenameRequest={getRenameRequest}
+          getDeleteRequest={getDeleteRequest}
         />
       </div>
     </aside>
