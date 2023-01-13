@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import PropTypes from 'prop-types'
 
 import { AiOutlineFolder as Icon } from 'react-icons/ai'
 import { IoCheckmarkCircleOutline as ConfirmRename, IoCloseCircleOutline as CancelRename} from 'react-icons/io5'
