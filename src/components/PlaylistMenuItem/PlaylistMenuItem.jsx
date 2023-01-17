@@ -21,7 +21,21 @@ const PlaylistMenuItem = (props) => {
         e.preventDefault()
         if(!renameMode)
           props.handleContextMenu(e.pageX, e.pageY, itemRef)
-      }} 
+      }}
+      onDragStart={() => {
+        props.setDraggedPlaylist(playlistName)
+      }}
+      onDragEnd={() => {
+        props.rearrangePlaylists()
+      }}
+      onDragOver={(e) => {
+        e.preventDefault()
+        props.setDraggedPlaylistTarget(playlistName)
+      }}
+      onDragExit={() => {
+        props.setDraggedPlaylistTarget("")
+      }}
+      onDrop={()=>{}}
       draggable={renameMode ? false : true}>
       <div className="playlistMenuItemLeft">
         <Icon color='lightgrey' size={25}/>

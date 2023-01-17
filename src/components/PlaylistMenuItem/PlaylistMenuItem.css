@@ -4,6 +4,7 @@
   flex-direction: row;
   align-items: start;
   justify-content: space-between;
+  background-color: transparent;
   padding: 15px 15px 15px 45px;
 }
 .playlistMenuItem:hover{
