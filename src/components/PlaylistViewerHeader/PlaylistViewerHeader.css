@@ -1,0 +1,48 @@
+.playlistViewerHeader{
+  padding: 25px;
+  background-color: rgb(230, 230, 230);
+}
+.headerInnerContainerTop{
+  display: flex;
+  flex-direction: row;
+  /* align-items: center; */
+  gap: 1.5rem;
+}
+
+.headerInnerContainerTopLeft img{
+  border-radius: 5px;
+  box-shadow: 4px 4px 16px 4px rgba(51, 51, 51, 0.38);
+}
+
+.headerInnerContainerTopRight{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.playlistTitle{
+  font-size: 50px;
+  color: rgb(72, 72, 72);
+  user-select: none;
+}
+.playlistInfo{
+  font-size: 20px;
+  color: rgb(72, 72, 72);
+  user-select: none;
+}
+.playlistBtns{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+.playlistBtns button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 4px 4px 16px 0px rgba(51, 51, 51, 0.38);
+}

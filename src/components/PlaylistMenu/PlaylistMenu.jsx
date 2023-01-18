@@ -7,8 +7,8 @@ import { SlMagnifier as Search } from 'react-icons/sl'
 import { HiChevronRight as Open, HiChevronDown as Close } from 'react-icons/hi'
 import { MdOutlineAdd as Add } from 'react-icons/md'
 
-import PlaylistMenuItem from '../PlaylistMenuItem/PlaylistMenuItem'
-import PlaylistMenuItemSettings from '../PlaylistMenuItemSettings/PlaylistMenuItemSettings'
+import PlaylistMenuItem from './PlaylistMenuItem/PlaylistMenuItem'
+import PlaylistMenuItemSettings from './PlaylistMenuItemSettings/PlaylistMenuItemSettings'
 import './PlaylistMenu.css'
 
 const PlaylistMenu = () => {
@@ -69,14 +69,16 @@ const PlaylistMenu = () => {
     const startIndex = allPlaylists.indexOf(draggedPlaylist.current)
     const endIndex = allPlaylists.indexOf(draggedPlaylistTarget.current)
     const draggedRight = endIndex > startIndex ? true : false
-    for (let i = startIndex; draggedRight ? i < endIndex : i > endIndex; draggedRight ? i++ : i--) {
-      const temp = allPlaylists[i]
-      const temp2 = allPlaylists[draggedRight ? i+1 : i-1]
-      allPlaylists[draggedRight ? i+1 : i-1] = temp
-      allPlaylists[i] = temp2
+    if(draggedPlaylist.current !== draggedPlaylistTarget.current){
+      for (let i = startIndex; draggedRight ? i < endIndex : i > endIndex; draggedRight ? i++ : i--) {
+        const temp = allPlaylists[i]
+        const temp2 = allPlaylists[draggedRight ? i+1 : i-1]
+        allPlaylists[draggedRight ? i+1 : i-1] = temp
+        allPlaylists[i] = temp2
+      }
+      setTotalPlaylists([...allPlaylists])
+      console.log("New arrangement:", totalPlaylists)
     }
-    setTotalPlaylists([...allPlaylists])
-    console.log("New arrangement:", totalPlaylists)
     setDraggedPlaylist("")
     setDraggedPlaylistTarget("")
   }
