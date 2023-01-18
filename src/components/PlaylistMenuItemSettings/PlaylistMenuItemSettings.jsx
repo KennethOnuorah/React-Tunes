@@ -1,12 +1,16 @@
-import { useEffect, useState, useImperativeHandle } from 'react'
+import { useEffect, useState, useImperativeHandle, forwardRef } from 'react'
 
 import { TbEdit as Rename, TbTrash as Delete } from 'react-icons/tb'
 import './PlaylistMenuItemSettings.css'
 
-const PlaylistMenuItemSettings = (props) => {
+const PlaylistMenuItemSettings = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false)
 
   const setInvisible = () => setVisible(false)
+
+  useImperativeHandle(ref, () => ({
+    setInvisible: setInvisible
+  }))
 
   useEffect(() => {
     //Set the visibility to true every time the position changes
@@ -43,6 +47,6 @@ const PlaylistMenuItemSettings = (props) => {
       </button>
     </div>
   )
-}
+})
 
 export default PlaylistMenuItemSettings

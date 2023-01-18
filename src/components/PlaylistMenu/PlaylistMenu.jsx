@@ -19,53 +19,76 @@ const PlaylistMenu = () => {
   const [enableRenameMode, setEnableRenameMode] = useState(false)
   const [renameRequestID, setRenameRequestID] = useState("")
   const [searchEntry, setSearchEntry] = useState("")
-  const targetPlaylistRef = useRef("")
+  const draggedPlaylist = useRef("")
+  const draggedPlaylistTarget = useRef("")
+  const contextMenuRef = useRef()
+  const contextTargetRef = useRef("")
   
   const handleSearch = (e) => {
     setSearchEntry(e.target.value)
     setDropdownOpened(e.target.value != '' ? true : dropdownOpened)
   }
 
-  const renameDuplicate = (name) => {
-    let checkCount = 0
-    let baseName = name
-    let newName = ""
-    while(totalPlaylists.includes(name))
-      name = `${baseName} (${checkCount+=1})`
-    newName = name
-    return newName == '' ? name : newName
-  }
-
   const positionContextMenu = (xPos, yPos, ref) => {
-    targetPlaylistRef.current = ref.current
+    contextTargetRef.current = ref.current
     clearRenameRequestID()
     setMenuCoordinates({x: xPos, y: yPos})
   }
 
+  const renameDuplicate = (name) => {
+    let checkCount = 0
+    let baseName = name
+    while(totalPlaylists.includes(name))
+      name = `${baseName} (${checkCount+=1})`
+    return name
+  }
   const getRenameRequest = (reqID) => {
     setEnableRenameMode(true)
     setRenameRequestID(reqID)
     console.log("Rename request for:", reqID, "\nRename mode enabled.")
   }
-
+  const clearRenameRequestID = () => setRenameRequestID("")
   const replaceOldPlaylistName = (oldName, newName) => {
     let allNames = totalPlaylists
     allNames[allNames.indexOf(oldName)] = newName
     setTotalPlaylists(allNames)
   }
 
-  const clearRenameRequestID = () => setRenameRequestID("")
-
   const getDeleteRequest = (reqID) => {
     const name = reqID.split('_')[1]
     deletePlaylist(name)
-    console.log("Deleting playlist:", name)
+    console.log("Deleted playlist:", name)
   }
-
   const deletePlaylist = (name) => setTotalPlaylists(totalPlaylists.filter((n) => n != name))
+
+  const setDraggedPlaylist = (name) => draggedPlaylist.current = name
+  const setDraggedPlaylistTarget = (name) => draggedPlaylistTarget.current = name
+  const rearrangePlaylists = () => {
+    console.log("Dragged playlist:", draggedPlaylist.current, "\nTarget playlist:", draggedPlaylistTarget.current)
+    const allPlaylists = totalPlaylists
+    const startIndex = allPlaylists.indexOf(draggedPlaylist.current)
+    const endIndex = allPlaylists.indexOf(draggedPlaylistTarget.current)
+    const draggedRight = endIndex > startIndex ? true : false
+    for (let i = startIndex; draggedRight ? i < endIndex : i > endIndex; draggedRight ? i++ : i--) {
+      const temp = allPlaylists[i]
+      const temp2 = allPlaylists[draggedRight ? i+1 : i-1]
+      allPlaylists[draggedRight ? i+1 : i-1] = temp
+      allPlaylists[i] = temp2
+    }
+    setTotalPlaylists([...allPlaylists])
+    console.log("New arrangement:", totalPlaylists)
+    setDraggedPlaylist("")
+    setDraggedPlaylistTarget("")
+  }
   
   return (
-    <aside className="playlistMenu">
+    <aside 
+      className="playlistMenu"
+      onClick={(e) => {
+        (e.target.className != "renamePlaylistBtn" || e.target.className != "deletePlaylistBtn") && 
+          contextMenuRef.current.setInvisible()
+      }}
+    >
       <div className="appName">
         <AppLogo color='#00d9ff' className="appLogo"/>
         Tunes
@@ -115,15 +138,19 @@ const PlaylistMenu = () => {
             key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
             name={name}
             handleContextMenu={positionContextMenu}
+            setDraggedPlaylist={setDraggedPlaylist}
+            setDraggedPlaylistTarget={setDraggedPlaylistTarget}
+            rearrangePlaylists={rearrangePlaylists}
             enableRenameMode={renameRequestID === "pl_"+name ? enableRenameMode : false}
             replaceOldPlaylistName={replaceOldPlaylistName}
             clearRenameRequestID={clearRenameRequestID}
             renameDuplicate={renameDuplicate}
           />)}
-        <PlaylistMenuItemSettings 
+        <PlaylistMenuItemSettings
+          ref={contextMenuRef}
           xPos={menuCoordinates.x}
           yPos={menuCoordinates.y} 
-          targetElementID={targetPlaylistRef.current !== '' ? targetPlaylistRef.current.id : ""}
+          targetElementID={contextTargetRef.current !== '' ? contextTargetRef.current.id : ""}
           getRenameRequest={getRenameRequest}
           getDeleteRequest={getDeleteRequest}
         />
