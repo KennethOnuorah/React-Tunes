@@ -11,8 +11,7 @@ import PlaylistMenuItem from './PlaylistMenuItem/PlaylistMenuItem'
 import PlaylistMenuItemSettings from './PlaylistMenuItemSettings/PlaylistMenuItemSettings'
 import './PlaylistMenu.css'
 
-const PlaylistMenu = () => {
-  const [darkTheme, setDarkTheme] = useState(false)
+const PlaylistMenu = (props) => {
   const [dropdownOpened, setDropdownOpened] = useState(false)
   const [totalPlaylists, setTotalPlaylists] = useState([])
   const [menuCoordinates, setMenuCoordinates] = useState({x: 0, y: 0})
@@ -68,12 +67,12 @@ const PlaylistMenu = () => {
     const allPlaylists = totalPlaylists
     const startIndex = allPlaylists.indexOf(draggedPlaylist.current)
     const endIndex = allPlaylists.indexOf(draggedPlaylistTarget.current)
-    const draggedRight = endIndex > startIndex ? true : false
+    const draggedDown = endIndex > startIndex ? true : false
     if(draggedPlaylist.current !== draggedPlaylistTarget.current){
-      for (let i = startIndex; draggedRight ? i < endIndex : i > endIndex; draggedRight ? i++ : i--) {
+      for (let i = startIndex; draggedDown ? i < endIndex : i > endIndex; draggedDown ? i++ : i--) {
         const temp = allPlaylists[i]
-        const temp2 = allPlaylists[draggedRight ? i+1 : i-1]
-        allPlaylists[draggedRight ? i+1 : i-1] = temp
+        const temp2 = allPlaylists[draggedDown ? i+1 : i-1]
+        allPlaylists[draggedDown ? i+1 : i-1] = temp
         allPlaylists[i] = temp2
       }
       setTotalPlaylists([...allPlaylists])
@@ -100,13 +99,13 @@ const PlaylistMenu = () => {
           <GitHub color='lightgrey' size={20}/>
           Visit Repository
         </a>
-        <button onClick={() => setDarkTheme(!darkTheme)}>
+        <button onClick={() => props.toggleDarkTheme(!props.darkTheme)}>
           {
-          !darkTheme ? 
+          !props.darkTheme ? 
             <Moon color='lightgrey' size={20}/> : 
             <Sun color='lightgrey' size={20}/>
           }
-          Set {!darkTheme ? "Dark" : "Light"} Theme
+          Set {!props.darkTheme ? "Dark" : "Light"} Theme
         </button>
       </div>
       <hr/>

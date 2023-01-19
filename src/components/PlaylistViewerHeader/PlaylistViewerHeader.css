@@ -1,24 +1,29 @@
 .playlistViewerHeader{
+  display: flex;
+  flex-direction: column;
   padding: 25px;
   background-color: rgb(230, 230, 230);
+  gap: 1rem;
 }
-.headerInnerContainerTop{
-  display: flex;
-  flex-direction: row;
-  /* align-items: center; */
-  gap: 1.5rem;
+.darkModeHeader{
+  background-color: rgb(65, 65, 65);
 }
 
-.headerInnerContainerTopLeft img{
+.headerInnerContainer{
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+}
+.playlistCoverSection img{
   border-radius: 5px;
   box-shadow: 4px 4px 16px 4px rgba(51, 51, 51, 0.38);
 }
-
-.headerInnerContainerTopRight{
+.playlistAboutSection{
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
+
 .playlistTitle{
   font-size: 50px;
   color: rgb(72, 72, 72);
@@ -29,9 +34,13 @@
   color: rgb(72, 72, 72);
   user-select: none;
 }
+.darkModeText{
+  color: rgb(255, 255, 255);
+}
 .playlistBtns{
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
@@ -44,5 +53,15 @@
   border-radius: 50px;
   border: none;
   cursor: pointer;
-  box-shadow: 4px 4px 16px 0px rgba(51, 51, 51, 0.38);
+  background-color: white;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+.playlistBtns button:hover{
+  filter: brightness(0.8);
+}
+.playlistBtns button:active{
+  transform: scale(0.85, 0.85);
+}
+.playlistBtns button:not(:active){
+  transform: scale(1, 1);
 }
