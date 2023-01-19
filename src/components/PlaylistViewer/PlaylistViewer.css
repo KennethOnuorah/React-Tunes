@@ -5,3 +5,29 @@
   right: 0%;
   overflow-x: hidden;
 }
+
+.borderLabels{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px 0px 30px;
+  color: rgb(144, 144, 144);
+}
+.darkThemeBorderLabels{
+  color: rgb(184, 184, 184);
+}
+
+.leftLabels{
+  display: flex;
+  align-items: center;
+  user-select: none;
+  gap: 1.5rem;
+}
+
+.borderHR{
+  border-color: rgb(206, 206, 206);
+  border-radius: 50px;
+}
+.darkThemeBorderHR{
+  border-color: rgb(106, 106, 106);
+}

@@ -1,16 +1,28 @@
+import { useEffect, useRef } from "react"
 
 import { HiOutlineUpload as UploadSong } from "react-icons/hi"
-import { IoImageOutline as UploadImg } from "react-icons/io5"
+import { IoImageOutline as UploadImg, IoTrashOutline as Trash } from "react-icons/io5"
 import { BsPlayFill as Play, BsPause as Pause} from 'react-icons/bs'
-import { HiOutlineClock as Time, HiOutlineHashtag as SongNumber} from "react-icons/hi"
 
 import "./PlaylistViewerHeader.css"
 
 const PlaylistViewerHeader = (props) => {
+  const headerRef = useRef()
+  const playlistTitleRef = useRef()
+  const playlistInfoRef = useRef()
+
+  useEffect(() => {
+    props.darkTheme ? headerRef.current.classList.add("darkModeHeader") : headerRef.current.classList.remove("darkModeHeader")
+    props.darkTheme ? playlistTitleRef.current.classList.add("darkModeText") : playlistTitleRef.current.classList.remove("darkModeText")
+    props.darkTheme ? playlistInfoRef.current.classList.add("darkModeText") : playlistInfoRef.current.classList.remove("darkModeText")
+  }, [props.darkTheme])
+
   return (
-    <header className='playlistViewerHeader'>
-      <div className="headerInnerContainerTop">
-        <div className="headerInnerContainerTopLeft">
+    <header
+      className='playlistViewerHeader'
+      ref={headerRef}>
+      <div className="headerInnerContainer">
+        <div className="playlistCoverSection">
           <img
             className="playlistCover"
             src="../src/images/default_album_cover.png" 
@@ -18,33 +30,39 @@ const PlaylistViewerHeader = (props) => {
             draggable={false}
           />
         </div>
-        <div className="headerInnerContainerTopRight">
-          <div className="playlistTitle" title="New playlist">
-            -
+        <div className="playlistAboutSection">
+          <div 
+            className="playlistTitle"
+            ref={playlistTitleRef}>
+            New playlist
           </div>
-          <div className="playlistInfo">
+          <div 
+            className="playlistInfo"
+            ref={playlistInfoRef}>
             No artists
             <br/>
             0 Songs
             <br/>
             0 min 0 sec
           </div>
-          <div className="playlistBtns">
-            <button style={{backgroundColor: "#0ecfe6"}}>
-              <Play size={30}/>
-            </button>
-            <button>
-              <UploadSong size={25}/>
-            </button>
-            <button>
-              <UploadImg size={25}/>
-            </button>
-          </div>
         </div>
+      </div>
+      <div className="playlistBtns">
+        <button style={{backgroundColor: "#0ecfe6"}} title="Start playlist">
+          <Play size={30}/>
+        </button>
+        <button title="Upload song(s)">
+          <UploadSong size={25}/>
+        </button>
+        <button title="Upload cover art">
+          <UploadImg size={25}/>
+        </button>
+        <button title="Delete playlist">
+          <Trash size={25}/>
+        </button>
       </div>
     </header>
   )
 }
 
 export default PlaylistViewerHeader
-
