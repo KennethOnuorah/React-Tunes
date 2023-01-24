@@ -6,13 +6,15 @@ hr{
 }
 
 .playlistMenu{
-  height: 100%;
+  /* height: 100%; */
   width: 280px;
   position: fixed;
   top: 0;
   left: 0;
+  bottom: 70px;
   background-color: rgb(23, 23, 23);
   color: white;
+  z-index: 99;
   /* overflow-x: hidden; */
 }
 .appName{
@@ -101,6 +103,5 @@ hr{
 .playlistContainer{
   overflow-x: hidden;
   overflow-y: auto;
-  /* width: 300px; */
-  height: 425px;
+  height: 375px;
 }
