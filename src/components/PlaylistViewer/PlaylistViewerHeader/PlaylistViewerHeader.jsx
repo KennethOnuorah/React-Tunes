@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { HiOutlineUpload as UploadSong } from "react-icons/hi"
 import { IoImageOutline as UploadImg, IoTrashOutline as Trash } from "react-icons/io5"
@@ -7,6 +7,10 @@ import { BsPlayFill as Play, BsPause as Pause} from 'react-icons/bs'
 import "./PlaylistViewerHeader.css"
 
 const PlaylistViewerHeader = (props) => {
+  const [playlistTitle, setPlaylistTitle] = useState("")
+  const [playlistArtists, setPlaylistArtists] = useState([])
+  const [songCount, setSongCount] = useState(0)
+  const [playlistLength, setPlaylistLength] = useState(0)
   const headerRef = useRef()
   const playlistTitleRef = useRef()
   const playlistInfoRef = useRef()

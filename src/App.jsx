@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet"
 
 import PlaylistMenu from "./components/PlaylistMenu/PlaylistMenu"
 import PlaylistViewer from "./components/PlaylistViewer/PlaylistViewer"
+import MusicController from "./components/MusicController/MusicController"
 import './App.css'
 
 function App() {
@@ -18,8 +19,8 @@ function App() {
       <PlaylistMenu
         darkTheme={darkTheme}
         toggleDarkTheme={toggleDarkTheme}/>
-      <PlaylistViewer
-        darkTheme={darkTheme}/>
+      <PlaylistViewer darkTheme={darkTheme}/>
+      <MusicController darkTheme={darkTheme}/>
     </div>
   )
 }

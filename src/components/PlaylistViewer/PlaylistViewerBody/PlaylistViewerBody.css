@@ -1,0 +1,7 @@
+.playlistViewerBody{
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  gap: 1rem;
+  margin-bottom: 75px;
+}

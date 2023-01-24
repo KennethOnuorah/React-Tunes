@@ -68,7 +68,7 @@ const PlaylistMenu = (props) => {
     const startIndex = allPlaylists.indexOf(draggedPlaylist.current)
     const endIndex = allPlaylists.indexOf(draggedPlaylistTarget.current)
     const draggedDown = endIndex > startIndex ? true : false
-    if(draggedPlaylist.current !== draggedPlaylistTarget.current){
+    if(draggedPlaylist.current !== draggedPlaylistTarget.current && draggedPlaylistTarget.current !== ""){
       for (let i = startIndex; draggedDown ? i < endIndex : i > endIndex; draggedDown ? i++ : i--) {
         const temp = allPlaylists[i]
         const temp2 = allPlaylists[draggedDown ? i+1 : i-1]

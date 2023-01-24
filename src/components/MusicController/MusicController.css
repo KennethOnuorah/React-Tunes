@@ -1,0 +1,116 @@
+.musicController{
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  padding: 15px 25px 15px 25px;
+  right: 0%;
+  bottom: 0%;
+  left: 0%;
+  height: 40px;
+  background-color: rgb(210, 210, 210);
+}
+.darkThemeMusicController{
+  background-color: rgb(70, 70, 70);
+}
+
+
+.controllerLeftContainer{
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.darkThemeLeftContainer{
+  color: white;
+}
+.currentSong{
+  width: max-content;
+  font-size: medium;
+}
+.mainControls{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.controlBtns{
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+}
+.controlBtns button, .playModeControls button{
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0px;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+.controlBtns button:hover, .playModeControls button:hover{
+  filter: opacity(0.65);
+}
+.controlBtns button:active, .playModeControls button:active{
+  transform: scale(0.85, 0.85);
+}
+.controlBtns button:not(:active), .playModeControls button:not(:active){
+  transform: scale(1, 1);
+}
+.songTime{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+.songLengthBar{
+  appearance: none;
+  background-color: rgb(51, 51, 51);
+  border-radius: 50px;
+  width: 275px;
+  height: 10px;
+}
+.songLengthBar::-moz-range-thumb, .songLengthBar::-webkit-slider-thumb, 
+.volumeAdjuster::-moz-range-thumb, .volumeAdjuster::-webkit-slider-thumb{
+  appearance: none;
+  cursor: pointer;
+  border-color: white;
+  border-radius: 50px;
+  height: 16px;
+  width: 16px;
+  box-shadow: 0px 0px 8px 2px rgba(51, 51, 51, 0.38);
+  transition: box-shadow 0.2s ease-in-out;
+}
+.songLengthBar::-moz-range-thumb:hover, .songLengthBar::-moz-range-thumb:active{
+  box-shadow: 0px 0px 8px 2px #00d9ff;
+}
+
+
+.controllerRightContainer{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 15px;
+  gap: 0.25rem;
+}
+.darkThemeRightContainer{
+  color: white;
+}
+.playModeControls{
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+.volumeControls{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25rem;
+}
+.volumeAdjuster{
+  appearance: none;
+  background-color: rgb(51, 51, 51);
+  border-radius: 50px;
+  height: 10px;
+}

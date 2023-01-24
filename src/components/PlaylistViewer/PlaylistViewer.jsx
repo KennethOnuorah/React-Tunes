@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react"
 import { HiOutlineClock as Time, HiOutlineHashtag as SongNumber} from "react-icons/hi"
 
-import PlaylistViewerHeader from "../PlaylistViewerHeader/PlaylistViewerHeader"
-import PlaylistViewerBody from "../PlaylistViewerBody/PlaylistViewerBody"
+import PlaylistViewerHeader from "./PlaylistViewerHeader/PlaylistViewerHeader"
+import PlaylistViewerBody from "./PlaylistViewerBody/PlaylistViewerBody"
 import './PlaylistViewer.css'
 
-const AlbumViewer = (props) => {
+const PlaylistViewer = (props) => {
   const labelsRef = useRef()
   const hrRef = useRef()
 
@@ -15,7 +15,7 @@ const AlbumViewer = (props) => {
   }, [props.darkTheme])
 
   return (
-    <div className="albumViewerContainer">
+    <section className="playlistViewerContainer">
       <PlaylistViewerHeader
         darkTheme={props.darkTheme}/>
       <div className="viewerBodyBorder">
@@ -24,7 +24,6 @@ const AlbumViewer = (props) => {
           ref={labelsRef}>
           <div 
             className="leftLabels">  
-            <SongNumber/>
             Title & Artist
           </div>
           <Time/>
@@ -36,9 +35,10 @@ const AlbumViewer = (props) => {
         style={{
           marginTop: "15px",
         }}/>
-      <PlaylistViewerBody/>
-    </div>
+      <PlaylistViewerBody
+        darkTheme={props.darkTheme}/>
+    </section>
   )
 }
 
-export default AlbumViewer
+export default PlaylistViewer
