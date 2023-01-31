@@ -6,6 +6,7 @@
   justify-content: space-between;
   background-color: transparent;
   padding: 15px 15px 15px 45px;
+  transition: background-color 0.2s ease-in-out;
 }
 .playlistMenuItem:hover{
   background-color: rgb(41, 41, 41);

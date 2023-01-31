@@ -21,6 +21,8 @@
 .playlistAboutSection{
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
   gap: 0.5rem;
 }
 
