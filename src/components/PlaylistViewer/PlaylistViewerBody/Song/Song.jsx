@@ -7,16 +7,28 @@ const Song = (props) => {
   const [songName, setSongName] = useState("")
   const [artistName, setArtistName] = useState("")
   const [songLength, setSongLength] = useState(0)
-  const [playing, isPlaying] = useState(false)
   const songRef = useRef()
+  const audioRef = useRef()
   const songInfoRef = useRef()
   const playBtnRef = useRef()
 
   useEffect(() => {
-    props.darkTheme ? songRef.current.classList.add("darkThemeSong") : songRef.current.classList.remove("darkThemeSong")
-    props.darkTheme ? songInfoRef.current.classList.add("darkThemeLeftSection") : songInfoRef.current.classList.remove("darkThemeLeftSection")
-    props.darkTheme ? playBtnRef.current.classList.add("darkThemePlayBtn") : playBtnRef.current.classList.remove("darkThemePlayBtn")
+    updateColorTheme()
   }, [props.darkTheme])
+
+  const updateColorTheme = () => {
+    if(props.darkTheme){
+      songRef.current.classList.add("darkThemeSong")
+      songInfoRef.current.classList.add("darkThemeLeftSection")
+      playBtnRef.current.classList.add("darkThemePlayBtn")
+      return
+    }
+    songRef.current.classList.remove("darkThemeSong")
+    songInfoRef.current.classList.remove("darkThemeLeftSection")
+    playBtnRef.current.classList.remove("darkThemePlayBtn")
+  }
+
+  //An <audio> element should be in the component as well. There is a callback function called "onMetadataLoaded" that could be of interest to you, rather than looking for a JS library to read metadata. I've bookmarked more on the function in "Coding Help"
   
   return (
     <section 

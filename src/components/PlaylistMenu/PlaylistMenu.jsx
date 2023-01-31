@@ -1,4 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, createContext } from 'react'
+import usePostInitialEffect from '../../hooks/usePostInitialEffect'
+export const MenuItemContext = createContext()
 
 import { SiApplemusic as AppLogo } from 'react-icons/si'
 import { BiSun as Sun, BiMoon as Moon } from 'react-icons/bi'
@@ -12,16 +14,62 @@ import PlaylistMenuItemSettings from './PlaylistMenuItemSettings/PlaylistMenuIte
 import './PlaylistMenu.css'
 
 const PlaylistMenu = (props) => {
-  const [dropdownOpened, setDropdownOpened] = useState(false)
-  const [totalPlaylists, setTotalPlaylists] = useState([])
+  const [dropdownOpened, setDropdownOpened] = useState(true)
+  const [playlistList, setPlaylistList] = useState([])
   const [menuCoordinates, setMenuCoordinates] = useState({x: 0, y: 0})
   const [enableRenameMode, setEnableRenameMode] = useState(false)
   const [renameRequestID, setRenameRequestID] = useState("")
   const [searchEntry, setSearchEntry] = useState("")
-  const draggedPlaylist = useRef("")
+
+  const draggedPlaylist = useRef("") 
   const draggedPlaylistTarget = useRef("")
   const contextMenuRef = useRef()
   const contextTargetRef = useRef("")
+  //For getting playlists on initialization
+  useEffect(() => {
+    const getPlaylists = async() => {
+      const res = await fetch("http://localhost:5000/playlistsCreated")
+      const playlistData = await res.json()
+      setPlaylistList([...playlistData.list])
+    }
+    getPlaylists()
+  }, [])
+
+  //For saving and updating the list of playlists
+  useEffect(() => {
+    const savePlaylistList = async() => {
+      const res = await fetch(`http://localhost:5000/playlistsCreated`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({
+          list: [...playlistList]
+        })
+      })
+      const data = await res.json()
+      console.log(`Playlist list (${new Date().toLocaleTimeString()}):`, data)
+    }
+    savePlaylistList()
+  }, [playlistList])
+
+  //For saving the color theme
+  usePostInitialEffect(() => {
+    const saveTheme = async() => {
+      const res = await fetch(`http://localhost:5000/darkTheme`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({
+          enabled: props.darkTheme
+        })
+      })
+      const data = await res.json()
+      console.log("Dark app theme currently set to:", data.enabled)
+    }
+    saveTheme()
+  }, [props.darkTheme])
   
   const handleSearch = (e) => {
     setSearchEntry(e.target.value)
@@ -37,7 +85,7 @@ const PlaylistMenu = (props) => {
   const renameDuplicate = (name) => {
     let checkCount = 0
     let baseName = name
-    while(totalPlaylists.includes(name))
+    while(playlistList.includes(name))
       name = `${baseName} (${checkCount+=1})`
     return name
   }
@@ -48,35 +96,35 @@ const PlaylistMenu = (props) => {
   }
   const clearRenameRequestID = () => setRenameRequestID("")
   const replaceOldPlaylistName = (oldName, newName) => {
-    let allNames = totalPlaylists
+    let allNames = playlistList
     allNames[allNames.indexOf(oldName)] = newName
-    setTotalPlaylists(allNames)
+    setPlaylistList(allNames)
   }
 
   const getDeleteRequest = (reqID) => {
     const name = reqID.split('_')[1]
     deletePlaylist(name)
-    console.log("Deleted playlist:", name)
+    console.log("Deleted playlist:", `"${name}"`)
   }
-  const deletePlaylist = (name) => setTotalPlaylists(totalPlaylists.filter((n) => n != name))
+  const deletePlaylist = (name) => setPlaylistList(playlistList.filter((n) => n != name))
 
   const setDraggedPlaylist = (name) => draggedPlaylist.current = name
   const setDraggedPlaylistTarget = (name) => draggedPlaylistTarget.current = name
   const rearrangePlaylists = () => {
     console.log("Dragged playlist:", draggedPlaylist.current, "\nTarget playlist:", draggedPlaylistTarget.current)
-    const allPlaylists = totalPlaylists
-    const startIndex = allPlaylists.indexOf(draggedPlaylist.current)
-    const endIndex = allPlaylists.indexOf(draggedPlaylistTarget.current)
+    const list = playlistList
+    const startIndex = list.indexOf(draggedPlaylist.current)
+    const endIndex = list.indexOf(draggedPlaylistTarget.current)
     const draggedDown = endIndex > startIndex ? true : false
     if(draggedPlaylist.current !== draggedPlaylistTarget.current && draggedPlaylistTarget.current !== ""){
       for (let i = startIndex; draggedDown ? i < endIndex : i > endIndex; draggedDown ? i++ : i--) {
-        const temp = allPlaylists[i]
-        const temp2 = allPlaylists[draggedDown ? i+1 : i-1]
-        allPlaylists[draggedDown ? i+1 : i-1] = temp
-        allPlaylists[i] = temp2
+        const temp = list[i]
+        const temp2 = list[draggedDown ? i+1 : i-1]
+        list[draggedDown ? i+1 : i-1] = temp
+        list[i] = temp2
       }
-      setTotalPlaylists([...allPlaylists])
-      console.log("New arrangement:", totalPlaylists)
+      setPlaylistList([...list])
+      console.log("New arrangement:", playlistList)
     }
     setDraggedPlaylist("")
     setDraggedPlaylistTarget("")
@@ -107,8 +155,7 @@ const PlaylistMenu = (props) => {
           }
           Set {!props.darkTheme ? "Dark" : "Light"} Theme
         </button>
-      </div>
-      <hr/>
+      </div><hr/>
       <div className="playlistController">
         <div className="searchPlaylists">
           <Search size={20}/>
@@ -125,28 +172,33 @@ const PlaylistMenu = (props) => {
           </div>
           <button 
             title='Create new playlist'
-            onClick={() => {
+            onClick={async() => {
               setDropdownOpened(true)
-              setTotalPlaylists([renameDuplicate("New playlist"), ...totalPlaylists])
+              setPlaylistList([renameDuplicate("New playlist"), ...playlistList])
             }}>
             <Add size={20} color='lightgrey'/>
           </button>
         </div>
       </div>
       <div className="playlistContainer">
-        {totalPlaylists.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
-          <PlaylistMenuItem
-            key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
-            name={name}
-            handleContextMenu={positionContextMenu}
-            setDraggedPlaylist={setDraggedPlaylist}
-            setDraggedPlaylistTarget={setDraggedPlaylistTarget}
-            rearrangePlaylists={rearrangePlaylists}
-            enableRenameMode={renameRequestID === "pl_"+name ? enableRenameMode : false}
-            replaceOldPlaylistName={replaceOldPlaylistName}
-            clearRenameRequestID={clearRenameRequestID}
-            renameDuplicate={renameDuplicate}
-          />)}
+        <MenuItemContext.Provider value={{ 
+          playlistList, 
+          positionContextMenu, 
+          setDraggedPlaylist, 
+          setDraggedPlaylistTarget, 
+          rearrangePlaylists, 
+          replaceOldPlaylistName,
+          clearRenameRequestID,
+          renameDuplicate}}
+        >
+          {playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
+            <PlaylistMenuItem
+              key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
+              name={name}
+              enableRenameMode={renameRequestID === "pl_"+name ? enableRenameMode : false}
+            />)
+          }
+        </MenuItemContext.Provider>
         <PlaylistMenuItemSettings
           ref={contextMenuRef}
           xPos={menuCoordinates.x}

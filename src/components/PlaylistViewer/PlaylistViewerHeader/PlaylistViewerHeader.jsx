@@ -16,10 +16,20 @@ const PlaylistViewerHeader = (props) => {
   const playlistInfoRef = useRef()
 
   useEffect(() => {
-    props.darkTheme ? headerRef.current.classList.add("darkModeHeader") : headerRef.current.classList.remove("darkModeHeader")
-    props.darkTheme ? playlistTitleRef.current.classList.add("darkModeText") : playlistTitleRef.current.classList.remove("darkModeText")
-    props.darkTheme ? playlistInfoRef.current.classList.add("darkModeText") : playlistInfoRef.current.classList.remove("darkModeText")
+    updateColorTheme()
   }, [props.darkTheme])
+
+  const updateColorTheme = () => {
+    if(props.darkTheme){
+      headerRef.current.classList.add("darkModeHeader")
+      playlistTitleRef.current.classList.add("darkModeText")
+      playlistInfoRef.current.classList.add("darkModeText")
+      return
+    }
+    headerRef.current.classList.remove("darkModeHeader")
+    playlistTitleRef.current.classList.remove("darkModeText")
+    playlistInfoRef.current.classList.remove("darkModeText")
+  }
 
   return (
     <header
@@ -37,12 +47,14 @@ const PlaylistViewerHeader = (props) => {
         <div className="playlistAboutSection">
           <div 
             className="playlistTitle"
-            ref={playlistTitleRef}>
-            New playlist
+            ref={playlistTitleRef}
+          >
+            {props.playlistTitle}
           </div>
           <div 
             className="playlistInfo"
-            ref={playlistInfoRef}>
+            ref={playlistInfoRef}
+          >
             No artists
             <br/>
             0 Songs

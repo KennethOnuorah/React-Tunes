@@ -24,10 +24,20 @@ const MusicController = (props) => {
   const leftContainerRef = useRef()
 
   useEffect(() => {
-    props.darkTheme ? controllerRef.current.classList.add("darkThemeMusicController") : controllerRef.current.classList.remove("darkThemeMusicController")
-    props.darkTheme ? leftContainerRef.current.classList.add("darkThemeLeftContainer") : leftContainerRef.current.classList.remove("darkThemeLeftContainer")
-    props.darkTheme ? rightContainerRef.current.classList.add("darkThemeRightContainer") : rightContainerRef.current.classList.remove("darkThemeRightContainer")
+    updateColorTheme()
   }, [props.darkTheme])
+
+  const updateColorTheme = () => {
+    if(props.darkTheme){
+      controllerRef.current.classList.add("darkThemeMusicController")
+      leftContainerRef.current.classList.add("darkThemeLeftContainer")
+      rightContainerRef.current.classList.add("darkThemeRightContainer")
+      return
+    }
+    controllerRef.current.classList.remove("darkThemeMusicController")
+    leftContainerRef.current.classList.remove("darkThemeLeftContainer")
+    rightContainerRef.current.classList.remove("darkThemeRightContainer")
+  }
 
   return (
     <footer 
