@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, createContext } from 'react'
-import usePostInitialEffect from '../../hooks/usePostInitialEffect'
-export const MenuItemContext = createContext()
+import { useUpdateEffect } from 'react-use'
 
 import { SiApplemusic as AppLogo } from 'react-icons/si'
 import { BiSun as Sun, BiMoon as Moon } from 'react-icons/bi'
@@ -13,6 +12,7 @@ import PlaylistMenuItem from './PlaylistMenuItem/PlaylistMenuItem'
 import PlaylistMenuItemSettings from './PlaylistMenuItemSettings/PlaylistMenuItemSettings'
 import './PlaylistMenu.css'
 
+export const MenuItemContext = createContext()
 const PlaylistMenu = (props) => {
   const [dropdownOpened, setDropdownOpened] = useState(true)
   const [playlistList, setPlaylistList] = useState([])
@@ -25,51 +25,72 @@ const PlaylistMenu = (props) => {
   const draggedPlaylistTarget = useRef("")
   const contextMenuRef = useRef()
   const contextTargetRef = useRef("")
-  //For getting playlists on initialization
+
+  //Getting playlists on initialization
   useEffect(() => {
     const getPlaylists = async() => {
-      const res = await fetch("http://localhost:5000/playlistsCreated")
-      const playlistData = await res.json()
-      setPlaylistList([...playlistData.list])
+      try {
+        const res = await fetch("http://localhost:5000/playlistsCreated")
+        const playlistData = await res.json()
+        setPlaylistList([...playlistData.list])
+      } 
+      catch(err) {
+        console.error(err)
+      }
     }
     getPlaylists()
   }, [])
 
-  //For saving and updating the list of playlists
-  useEffect(() => {
+  //Saving and updating the list of playlists.
+  useUpdateEffect(() => {
     const savePlaylistList = async() => {
-      const res = await fetch(`http://localhost:5000/playlistsCreated`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify({
-          list: [...playlistList]
+      try {
+        const res = await fetch(`http://localhost:5000/playlistsCreated`, {
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json"
+          },
+          body: JSON.stringify({
+            list: [...playlistList]
+          })
         })
-      })
-      const data = await res.json()
-      console.log(`Playlist list (${new Date().toLocaleTimeString()}):`, data)
+        const data = await res.json()
+        console.log(`Playlist list saved (${new Date().toLocaleTimeString()})\n`, data)
+      } 
+      catch (err) {
+        console.error(err)
+      }
     }
     savePlaylistList()
-  }, [playlistList])
+  }, [playlistList.join("")])
 
-  //For saving the color theme
-  usePostInitialEffect(() => {
-    const saveTheme = async() => {
-      const res = await fetch(`http://localhost:5000/darkTheme`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify({
-          enabled: props.darkTheme
+  const addPlaylistDetails = (name) => {
+    const update = async() => {
+      try {
+        const res = await fetch(`http://localhost:5000/playlistDetails`, {
+          method: "PATCH",
+          headers: {
+            "Content-type": "application/json"
+          },
+          body: JSON.stringify({
+            [name]: {
+              totalArtists: [],
+              totalSongs: [],
+              totalLength: 0,
+              coverArtBase64: "",
+              songDetails: {}
+            }
+          })
         })
-      })
-      const data = await res.json()
-      console.log("Dark app theme currently set to:", data.enabled)
+        const data = await res.json()
+        console.log(`New playlist "${name}" has been saved:`, data)
+      }
+      catch(err) {
+        console.error(err)
+      }
     }
-    saveTheme()
-  }, [props.darkTheme])
+    update()
+  }
   
   const handleSearch = (e) => {
     setSearchEntry(e.target.value)
@@ -92,7 +113,7 @@ const PlaylistMenu = (props) => {
   const getRenameRequest = (reqID) => {
     setEnableRenameMode(true)
     setRenameRequestID(reqID)
-    console.log("Rename request for:", reqID, "\nRename mode enabled.")
+    console.log("Rename request for:", reqID.split('_')[1])
   }
   const clearRenameRequestID = () => setRenameRequestID("")
   const replaceOldPlaylistName = (oldName, newName) => {
@@ -101,9 +122,19 @@ const PlaylistMenu = (props) => {
     setPlaylistList(allNames)
   }
 
-  const getDeleteRequest = (reqID) => {
+  const getDeleteRequest = async(reqID) => {
     const name = reqID.split('_')[1]
     deletePlaylist(name)
+    const detailsRes = await fetch("http://localhost:5000/playlistDetails")
+    const detailsData = await detailsRes.json()
+    delete detailsData[name]
+    await fetch("http://localhost:5000/playlistDetails", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(detailsData)
+    })
     console.log("Deleted playlist:", `"${name}"`)
   }
   const deletePlaylist = (name) => setPlaylistList(playlistList.filter((n) => n != name))
@@ -111,7 +142,6 @@ const PlaylistMenu = (props) => {
   const setDraggedPlaylist = (name) => draggedPlaylist.current = name
   const setDraggedPlaylistTarget = (name) => draggedPlaylistTarget.current = name
   const rearrangePlaylists = () => {
-    console.log("Dragged playlist:", draggedPlaylist.current, "\nTarget playlist:", draggedPlaylistTarget.current)
     const list = playlistList
     const startIndex = list.indexOf(draggedPlaylist.current)
     const endIndex = list.indexOf(draggedPlaylistTarget.current)
@@ -124,15 +154,13 @@ const PlaylistMenu = (props) => {
         list[i] = temp2
       }
       setPlaylistList([...list])
-      console.log("New arrangement:", playlistList)
     }
     setDraggedPlaylist("")
     setDraggedPlaylistTarget("")
   }
   
   return (
-    <aside 
-      className="playlistMenu"
+    <aside className="playlistMenu"
       onClick={(e) => {
         (e.target.className != "renamePlaylistBtn" || e.target.className != "deletePlaylistBtn") && 
           contextMenuRef.current.setInvisible()
@@ -170,11 +198,11 @@ const PlaylistMenu = (props) => {
             </button>
             Playlists
           </div>
-          <button 
-            title='Create new playlist'
-            onClick={async() => {
+          <button title='Create new playlist'
+            onClick={() => {
               setDropdownOpened(true)
               setPlaylistList([renameDuplicate("New playlist"), ...playlistList])
+              addPlaylistDetails(renameDuplicate("New playlist"))
             }}>
             <Add size={20} color='lightgrey'/>
           </button>

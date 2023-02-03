@@ -1,13 +1,9 @@
 {
   "darkTheme": {
-    "enabled": true
+    "enabled": false
   },
   "playlistsCreated": {
-    "list": [
-      "New playlist (2)",
-      "New playlist (1)",
-      "New playlist"
-    ]
+    "list": []
   },
   "playlistDetails": {}
 }

@@ -10,18 +10,17 @@ const PlaylistViewer = (props) => {
   const hrRef = useRef()
 
   useEffect(() => {
+    const updateColorTheme = () => {
+      if(props.darkTheme){
+        labelsRef.current.classList.add("darkThemeBorderLabels")
+        hrRef.current.classList.add("darkThemeBorderHR")
+        return
+      }
+      labelsRef.current.classList.remove("darkThemeBorderLabels")
+      hrRef.current.classList.remove("darkThemeBorderHR")
+    }
     updateColorTheme()
   }, [props.darkTheme])
-
-  const updateColorTheme = () => {
-    if(props.darkTheme){
-      labelsRef.current.classList.add("darkThemeBorderLabels")
-      hrRef.current.classList.add("darkThemeBorderHR")
-      return
-    }
-    labelsRef.current.classList.remove("darkThemeBorderLabels")
-    hrRef.current.classList.remove("darkThemeBorderHR")
-  }
 
   return (
     <section className="playlistViewerContainer">

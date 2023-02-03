@@ -10,38 +10,36 @@
   },
   "playlistDetails": {
     "Jazz music": {
-      "artists": ["Herbie Hancock", "John Coltrane"],
-      "totalLength": "17:58",
+      "totalArtists": ["Herbie Hancock", "John Coltrane"],
+      "totalLength": 885,
       "coverArtBase64": "",
-      "songsAdded": ["Maiden Voyage", "Summertime"],
-      "songDetails": {
+      "songs": {
         "Maiden Voyage": {
           "artist": "Herbie Hancock",
-          "length": "7:58",
-          "songBase64": ""
+          "length": 285,
+          "base64": ""
         },
         "Summertime": {
           "artist": "John Coltrane",
-          "length": "10:00",
-          "songBase64": ""
+          "length": 600,
+          "base64": ""
         }
       }
     },
     "Grunge & Alternative Rock": {
-      "artists": ["Nirvana", "Alice In Chains"],
-      "totalLength": "7:01",
+      "totalArtists": ["Nirvana", "Alice In Chains"],
+      "totalLength": 461,
       "coverArtBase64": "",
-      "songsAdded": ["Negative Creep", "Sunshine"],
-      "songDetails": {
+      "songs": {
         "Negative Creep": {
           "artist": "Nirvana",
-          "length": "2:56",
-          "songBase64": ""
+          "length": 176,
+          "base64": ""
         },
         "Sunshine": {
           "artist": "Alice In Chains",
-          "length": "4:45",
-          "songBase64": ""
+          "length": 285,
+          "base64": ""
         }
       }
     }
