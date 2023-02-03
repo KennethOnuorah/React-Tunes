@@ -4,7 +4,11 @@ import "./PlaylistViewerBody.css"
 const PlaylistViewerBody = (props) => {
   return (
     <section className="playlistViewerBody">
-      {/* <Song darkTheme={props.darkTheme}/> */}
+      {/* 
+              SONGS GO HERE
+              =============
+      <Song darkTheme={props.darkTheme}/> */
+      }
     </section>
   )
 }
