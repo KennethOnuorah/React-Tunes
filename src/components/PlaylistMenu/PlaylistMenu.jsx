@@ -122,7 +122,6 @@ const PlaylistMenu = (props) => {
     const name = reqID.split('_')[1]
     deletePlaylist(name)
     removeViewedPlaylist(name)
-    console.log("sdsdfjfsdj")
   }
   const deletePlaylist = async(name) => {
     setPlaylistList(playlistList.filter((n) => n != name))
