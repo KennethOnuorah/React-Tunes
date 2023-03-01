@@ -1,43 +1,55 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { BsPlayFill as Play, BsPause as Pause} from 'react-icons/bs'
 import './Song.css'
 
 const Song = (props) => {
-  const [songName, setSongName] = useState("")
-  const [artistName, setArtistName] = useState("")
-  const [songLength, setSongLength] = useState(0)
   const songRef = useRef()
-  const audioRef = useRef()
   const songInfoRef = useRef()
   const playBtnRef = useRef()
 
   useEffect(() => {
+    const updateColorTheme = () => {
+      if(props.darkTheme){
+        songRef.current.classList.add("darkThemeSong")
+        songInfoRef.current.classList.add("darkThemeLeftSection")
+        playBtnRef.current.classList.add("darkThemePlayBtn")
+        return
+      }
+      songRef.current.classList.remove("darkThemeSong")
+      songInfoRef.current.classList.remove("darkThemeLeftSection")
+      playBtnRef.current.classList.remove("darkThemePlayBtn")
+    }
     updateColorTheme()
   }, [props.darkTheme])
 
-  const updateColorTheme = () => {
-    if(props.darkTheme){
-      songRef.current.classList.add("darkThemeSong")
-      songInfoRef.current.classList.add("darkThemeLeftSection")
-      playBtnRef.current.classList.add("darkThemePlayBtn")
-      return
+  const toDigitalFormat = (seconds) => {
+    let sec = 0
+    let min = 0
+    let hr = 0
+    while(seconds > 0){
+      if(0 < seconds && seconds < 59){
+        sec = seconds
+        seconds = 0
+      }else if(60 < seconds && seconds < 3599){
+        min = Math.floor(seconds / 60)
+        seconds %= 60
+      }else if(seconds > 3600){
+        hr = Math.floor(seconds / 3600)
+        seconds %= 3600
+      }
     }
-    songRef.current.classList.remove("darkThemeSong")
-    songInfoRef.current.classList.remove("darkThemeLeftSection")
-    playBtnRef.current.classList.remove("darkThemePlayBtn")
+    const secText = sec.toString().padStart(2, '0')
+    const minText = hr > 0 ? min.toString().padStart(2, '0') : min.toString()
+    const hrText = hr > 0 ? hr.toString().padStart(2, '0') + ":" : ""
+    let time = `${hrText}${minText}:${secText}`
+    return time
   }
-
-  //An <audio> element should be in the component as well. There is a callback function called "onMetadataLoaded" that could be of interest to you, rather than looking for a JS library to read metadata. I've bookmarked more on the function in "Coding Help"
   
   return (
     <section 
       className="song"
       ref={songRef}
-      onContextMenu={(e) => {
-        e.preventDefault()
-        console.log("User has left clicked on song:", songName)
-      }}
       draggable>
       <div className="songLeftSection">
         <button 
@@ -50,15 +62,15 @@ const Song = (props) => {
           className="songInfo"
           ref={songInfoRef}>
           <div className='songName'>
-            This is a song
+            {props.songName}
           </div>
           <div className='artistName'>
-            Artist name
+            {props.songArtist}
           </div>
         </div>
       </div>
       <div className="songLength">
-        0:00
+        {toDigitalFormat(props.songDuration)}
       </div>
     </section>
   )

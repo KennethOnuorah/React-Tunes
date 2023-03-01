@@ -10,6 +10,7 @@
 }
 .playlistMenuItem:hover{
   background-color: rgb(41, 41, 41);
+  cursor: pointer;
   color: #00d9ff;
 }
 .playlistMenuItemLeft{
