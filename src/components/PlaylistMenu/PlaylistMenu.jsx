@@ -1,5 +1,7 @@
-import { useState, useRef, useEffect, createContext } from 'react'
+import { useState, useRef, useEffect, createContext, useContext } from 'react'
 import { useUpdateEffect } from 'react-use'
+import * as localforage from "localforage"
+import { MenuContext } from '../../App'
 
 import { SiApplemusic as AppLogo } from 'react-icons/si'
 import { BiSun as Sun, BiMoon as Moon } from 'react-icons/bi'
@@ -21,6 +23,10 @@ const PlaylistMenu = (props) => {
   const [renameRequestID, setRenameRequestID] = useState("")
   const [searchEntry, setSearchEntry] = useState("")
 
+  const { 
+    removeViewedPlaylist, 
+    requestedDeletionFromViewer } = useContext(MenuContext)
+
   const draggedPlaylist = useRef("") 
   const draggedPlaylistTarget = useRef("")
   const contextMenuRef = useRef()
@@ -30,9 +36,8 @@ const PlaylistMenu = (props) => {
   useEffect(() => {
     const getPlaylists = async() => {
       try {
-        const res = await fetch("http://localhost:5000/playlistsCreated")
-        const playlistData = await res.json()
-        setPlaylistList([...playlistData.list])
+        const list = await localforage.getItem("_playlist_all")
+        setPlaylistList(list === null ? [] : [...list])
       } 
       catch(err) {
         console.error(err)
@@ -45,17 +50,8 @@ const PlaylistMenu = (props) => {
   useUpdateEffect(() => {
     const savePlaylistList = async() => {
       try {
-        const res = await fetch(`http://localhost:5000/playlistsCreated`, {
-          method: "PUT",
-          headers: {
-            "Content-type": "application/json"
-          },
-          body: JSON.stringify({
-            list: [...playlistList]
-          })
-        })
-        const data = await res.json()
-        console.log(`Playlist list saved (${new Date().toLocaleTimeString()})\n`, data)
+        await localforage.setItem("_playlist_all", [...playlistList])
+        console.log(`Playlist list saved (${new Date().toLocaleTimeString()})\n`, playlistList)
       } 
       catch (err) {
         console.error(err)
@@ -64,28 +60,28 @@ const PlaylistMenu = (props) => {
     savePlaylistList()
   }, [playlistList.join("")])
 
-  const addPlaylistDetails = (name) => {
+  //Deleting a specific playlist from the viewer
+  useUpdateEffect(() => {
+    deletePlaylist(requestedDeletionFromViewer)
+  }, [requestedDeletionFromViewer])
+
+  //Create store containing default information for newly created playlist
+  const createNewPlaylistDetails = (name) => {
     const update = async() => {
       try {
-        const res = await fetch(`http://localhost:5000/playlistDetails`, {
-          method: "PATCH",
-          headers: {
-            "Content-type": "application/json"
-          },
-          body: JSON.stringify({
-            [name]: {
-              totalArtists: [],
-              totalSongs: [],
-              totalLength: 0,
-              coverArtBase64: "",
-              songDetails: {}
-            }
-          })
+        const currentDetails = await localforage.getItem("_playlist_details")
+        await localforage.setItem(`_playlist_details`, {
+          ...currentDetails,
+          [name]: {
+            allArtists: [],
+            allSongs: [],
+            allSongDurations: [],
+            totalLength: 0,
+            coverArt: "../src/images/default_album_cover.png",
+          }
         })
-        const data = await res.json()
-        console.log(`New playlist "${name}" has been saved:`, data)
       }
-      catch(err) {
+      catch (err) {
         console.error(err)
       }
     }
@@ -122,22 +118,27 @@ const PlaylistMenu = (props) => {
     setPlaylistList(allNames)
   }
 
-  const getDeleteRequest = async(reqID) => {
+  const getDeleteRequest = (reqID) => {
     const name = reqID.split('_')[1]
     deletePlaylist(name)
-    const detailsRes = await fetch("http://localhost:5000/playlistDetails")
-    const detailsData = await detailsRes.json()
-    delete detailsData[name]
-    await fetch("http://localhost:5000/playlistDetails", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json"
-      },
-      body: JSON.stringify(detailsData)
-    })
+    removeViewedPlaylist(name)
+    console.log("sdsdfjfsdj")
+  }
+  const deletePlaylist = async(name) => {
+    setPlaylistList(playlistList.filter((n) => n != name))
+    let allPlaylists = await localforage.getItem("_playlist_all")
+    let allDetails = await localforage.getItem("_playlist_details")
+    allPlaylists = allPlaylists.filter((p) => p != name)
+    delete allDetails[name]
+    await localforage.setItem("_playlist_all", allPlaylists)
+    await localforage.setItem("_playlist_details", allDetails)
+    const keys = await localforage.keys()
+    for(const key of keys){
+      if(!key.includes(`${name}: `)) return
+      await localforage.removeItem(key)
+    }
     console.log("Deleted playlist:", `"${name}"`)
   }
-  const deletePlaylist = (name) => setPlaylistList(playlistList.filter((n) => n != name))
 
   const setDraggedPlaylist = (name) => draggedPlaylist.current = name
   const setDraggedPlaylistTarget = (name) => draggedPlaylistTarget.current = name
@@ -202,22 +203,14 @@ const PlaylistMenu = (props) => {
             onClick={() => {
               setDropdownOpened(true)
               setPlaylistList([renameDuplicate("New playlist"), ...playlistList])
-              addPlaylistDetails(renameDuplicate("New playlist"))
+              createNewPlaylistDetails(renameDuplicate("New playlist"))
             }}>
             <Add size={20} color='lightgrey'/>
           </button>
         </div>
       </div>
       <div className="playlistContainer">
-        <MenuItemContext.Provider value={{ 
-          playlistList, 
-          positionContextMenu, 
-          setDraggedPlaylist, 
-          setDraggedPlaylistTarget, 
-          rearrangePlaylists, 
-          replaceOldPlaylistName,
-          clearRenameRequestID,
-          renameDuplicate}}
+        <MenuItemContext.Provider value={{ playlistList, positionContextMenu, setDraggedPlaylist, setDraggedPlaylistTarget, rearrangePlaylists, replaceOldPlaylistName,clearRenameRequestID, renameDuplicate}}
         >
           {playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
             <PlaylistMenuItem
