@@ -1,4 +1,4 @@
-.playlistMenuItem{
+.menuItem{
   position: relative;
   display: flex;
   flex-direction: row;
@@ -8,24 +8,24 @@
   padding: 15px 15px 15px 45px;
   transition: background-color 0.2s ease-in-out;
 }
-.playlistMenuItem:hover{
+.menuItem:hover{
   background-color: rgb(41, 41, 41);
   cursor: pointer;
   color: #00d9ff;
 }
-.playlistMenuItemLeft{
+.menuItemLeft{
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   flex-shrink: 0;
   gap: 0.5rem;
 }
-.playlistMenuItemRight{
+.menuItemRight{
   display: flex;
   flex-direction: row;
   align-items: start;
 }
-.playlistMenuItemLeft button, .playlistMenuItemRight button{
+.menuItemLeft button, .menuItemRight button{
   display: flex;
   flex-wrap: wrap;
   hyphens: auto;
@@ -47,7 +47,7 @@
   padding: 5px;
   width: 105px;
 }
-.playlistMenuItemLeft button:hover, .playlistMenuItemLeft button:focus{
+.menuItemLeft button:hover, .menuItemLeft button:focus{
   color: #00d9ff;
   cursor: pointer;
 }

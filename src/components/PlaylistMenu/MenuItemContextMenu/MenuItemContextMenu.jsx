@@ -1,9 +1,9 @@
 import { useEffect, useState, useImperativeHandle, forwardRef } from 'react'
 
 import { TbEdit as Rename, TbTrash as Delete } from 'react-icons/tb'
-import './PlaylistMenuItemSettings.css'
+import './MenuItemContextMenu.css'
 
-const PlaylistMenuItemSettings = forwardRef((props, ref) => {
+const MenuItemContextMenu = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false)
 
   const setInvisible = () => setVisible(false)
@@ -20,7 +20,7 @@ const PlaylistMenuItemSettings = forwardRef((props, ref) => {
 
   return (
     <div 
-      className="playlistMenuItemSettings"
+      className="menuItemContextMenu"
       style={{
         transform: `translate(${props.xPos}px, ${props.yPos}px)`,
         visibility: visible ? 'visible' : 'hidden'
@@ -49,4 +49,4 @@ const PlaylistMenuItemSettings = forwardRef((props, ref) => {
   )
 })
 
-export default PlaylistMenuItemSettings
+export default MenuItemContextMenu

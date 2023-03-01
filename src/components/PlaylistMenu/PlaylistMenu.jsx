@@ -10,8 +10,8 @@ import { SlMagnifier as Search } from 'react-icons/sl'
 import { HiChevronRight as Open, HiChevronDown as Close } from 'react-icons/hi'
 import { MdOutlineAdd as Add } from 'react-icons/md'
 
-import PlaylistMenuItem from './PlaylistMenuItem/PlaylistMenuItem'
-import PlaylistMenuItemSettings from './PlaylistMenuItemSettings/PlaylistMenuItemSettings'
+import MenuItem from './MenuItem/MenuItem'
+import MenuItemContextMenu from './MenuItemContextMenu/MenuItemContextMenu'
 import './PlaylistMenu.css'
 
 export const MenuItemContext = createContext()
@@ -213,14 +213,14 @@ const PlaylistMenu = (props) => {
         <MenuItemContext.Provider value={{ playlistList, positionContextMenu, setDraggedPlaylist, setDraggedPlaylistTarget, rearrangePlaylists, replaceOldPlaylistName,clearRenameRequestID, renameDuplicate}}
         >
           {playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
-            <PlaylistMenuItem
+            <MenuItem
               key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
               name={name}
               enableRenameMode={renameRequestID === "pl_"+name ? enableRenameMode : false}
             />)
           }
         </MenuItemContext.Provider>
-        <PlaylistMenuItemSettings
+        <MenuItemContextMenu
           ref={contextMenuRef}
           xPos={menuCoordinates.x}
           yPos={menuCoordinates.y} 

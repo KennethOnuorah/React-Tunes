@@ -5,10 +5,10 @@ import { MenuContext } from '../../../App'
 import { AiOutlineFolder as Icon } from 'react-icons/ai'
 import { IoCheckmarkCircleOutline as ConfirmRename, IoCloseCircleOutline as CancelRename} from 'react-icons/io5'
 
-import './PlaylistMenuItem.css'
+import './MenuItem.css'
 import * as localforage from 'localforage'
 
-const PlaylistMenuItem = (props) => {
+const MenuItem = (props) => {
   const [playlistName, setPlaylistName] = useState(props.name)
   const [renameMode, setRenameMode] = useState(props.enableRenameMode)
   const { positionContextMenu, 
@@ -65,7 +65,7 @@ const PlaylistMenuItem = (props) => {
   
   return (
     <div 
-      className='playlistMenuItem' 
+      className='menuItem' 
       id={`pl_${playlistName}`} 
       ref={itemRef}
       onClick={async() => {
@@ -92,7 +92,7 @@ const PlaylistMenuItem = (props) => {
       }}
       onDragExit={() => setDraggedPlaylistTarget("")}
       draggable={renameMode ? false : true}>
-      <div className="playlistMenuItemLeft">
+      <div className="menuItemLeft">
         <Icon color='lightgrey' size={25}/>
         <button style={{ display: renameMode ? 'none' : 'flex' }}>
           {playlistName}
@@ -104,7 +104,7 @@ const PlaylistMenuItem = (props) => {
           onInput={(e) => newName.current = e.target.value}
         />
       </div>
-      <div className="playlistMenuItemRight">
+      <div className="menuItemRight">
         <button
           className='confirmRename'
           onClick={updatePlaylistName}>
@@ -132,4 +132,4 @@ const PlaylistMenuItem = (props) => {
   )
 }
 
-export default PlaylistMenuItem
+export default MenuItem

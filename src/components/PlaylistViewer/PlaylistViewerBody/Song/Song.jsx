@@ -1,13 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 import { BsPlayFill as Play, BsPause as Pause} from 'react-icons/bs'
 import './Song.css'
 
 const Song = (props) => {
+  const [songName, setSongName] = useState("")
   const songRef = useRef()
   const songInfoRef = useRef()
   const playBtnRef = useRef()
 
+  //Updating the color theme
   useEffect(() => {
     const updateColorTheme = () => {
       if(props.darkTheme){
@@ -22,6 +24,11 @@ const Song = (props) => {
     }
     updateColorTheme()
   }, [props.darkTheme])
+
+  //Setting the song name
+  useEffect(() => {
+    setSongName(`${props.songArtist} - ${props.songName}`)
+  }, [])
 
   const toDigitalFormat = (seconds) => {
     let sec = 0
@@ -50,6 +57,10 @@ const Song = (props) => {
     <section 
       className="song"
       ref={songRef}
+      onDragStart={() => {}}
+      onDragEnd={() => {}}
+      onDragOver={() => {}}
+      onDragExit={() => {}}
       draggable>
       <div className="songLeftSection">
         <button 
