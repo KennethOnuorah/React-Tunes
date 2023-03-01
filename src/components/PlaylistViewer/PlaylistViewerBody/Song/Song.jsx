@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+// import * as localforage from 'localforage'
 
 import { BsPlayFill as Play, BsPause as Pause} from 'react-icons/bs'
 import './Song.css'
@@ -8,7 +9,7 @@ const Song = (props) => {
   const songRef = useRef()
   const songInfoRef = useRef()
   const playBtnRef = useRef()
-
+  
   //Updating the color theme
   useEffect(() => {
     const updateColorTheme = () => {
@@ -57,10 +58,13 @@ const Song = (props) => {
     <section 
       className="song"
       ref={songRef}
-      onDragStart={() => {}}
-      onDragEnd={() => {}}
-      onDragOver={() => {}}
-      onDragExit={() => {}}
+      onDragStart={() => props.setDraggedSong(props.songName)}
+      onDragEnd={() => {props.rearrangeSongs()}}
+      onDragOver={(e) => {
+        e.preventDefault()
+        props.setDraggedSongTarget(props.songName)
+      }}
+      onDragExit={() => props.setDraggedSongTarget("")}
       draggable>
       <div className="songLeftSection">
         <button 

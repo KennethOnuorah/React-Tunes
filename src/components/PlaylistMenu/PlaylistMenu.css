@@ -47,11 +47,15 @@ hr{
   background-color: transparent;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.appOptionSection button:hover, .appOptionSection button:focus,
+.appOptionSection button:hover,
 .appOptionSection a:hover, .appOptionSection a:focus{
   background-color: rgb(41, 41, 41);
   color: #00d9ff;
   cursor: pointer;
+}
+.appOptionSection a:not(:hover){
+  color: lightgray;
+  background-color: transparent;
 }
 
 .PlaylistController{

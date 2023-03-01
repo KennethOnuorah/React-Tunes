@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react"
-import { ViewerContext } from "../../../App"
+import { useEffect, useState, useRef } from "react"
 import * as localforage from "localforage"
 
 import Song from "./Song/Song"
@@ -9,25 +8,41 @@ const PlaylistViewerBody = (props) => {
   const [songs, setSongs] = useState([])
   const [artists, setArtists] = useState([])
   const [durations, setDurations] = useState([])
-  const { details } = useContext(ViewerContext)
+  const [rearrangementCount, setRearrangementCount] = useState(0)
+  const draggedSong = useRef("")
+  const draggedSongTarget = useRef("")
 
   useEffect(() => {
     const getSongs = async() => {
-      console.log("Adding song to viewer display...")
       const details = await localforage.getItem("_playlist_details")
       setSongs(details[props.details.name]["allSongs"])
       setArtists(details[props.details.name]["allArtists"])
       setDurations(details[props.details.name]["allSongDurations"])
     }
     getSongs()
-  }, [props.details.songCount])
+  }, [props.details.songCount, rearrangementCount])
 
-  const setDraggedSong = () => {
-
-  }
-  
-  const setDraggedSongTarget = () => {
-    
+  const setDraggedSong = (name) => draggedSong.current = name
+  const setDraggedSongTarget = (name) => draggedSongTarget.current = name
+  const rearrangeSongs = async() => {
+    let details = await localforage.getItem("_playlist_details")
+    let songList = details[props.details.name]["allSongs"]
+    const start = songList.indexOf(draggedSong.current)
+    const end = songList.indexOf(draggedSongTarget.current)
+    const draggedDown = end > start ? true : false
+    if(draggedSong.current !== draggedSongTarget.current && draggedSongTarget.current !== ""){
+      for (let i = start; draggedDown ? i < end : i > end; draggedDown ? i++ : i--) {
+        const temp = songList[i]
+        const temp2 = songList[draggedDown ? i+1 : i-1]
+        songList[draggedDown ? i+1 : i-1] = temp
+        songList[i] = temp2
+      }
+      details[props.details.name]["allSongs"] = songList
+      await localforage.setItem("_playlist_details", details)
+      setRearrangementCount(rearrangementCount + 1)
+    }
+    setDraggedSong("")
+    setDraggedSongTarget("")
   }
 
   return (
@@ -35,11 +50,14 @@ const PlaylistViewerBody = (props) => {
       {
         songs.map((song) => 
           <Song
-            key={song}
+            key={`${song}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`}
             darkTheme={props.darkTheme} 
             songName={song} 
             songArtist={artists[songs.indexOf(song)]}
-            songDuration={durations[songs.indexOf(song)]}/>)
+            songDuration={durations[songs.indexOf(song)]}
+            setDraggedSong={setDraggedSong}
+            setDraggedSongTarget={setDraggedSongTarget}
+            rearrangeSongs={rearrangeSongs}/>)
       }
     </section>
   )

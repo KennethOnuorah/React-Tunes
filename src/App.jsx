@@ -10,8 +10,9 @@ import "./App.css"
 
 export const MenuContext = createContext()
 export const ViewerContext = createContext()
+const dark = await localforage.getItem("_dark_theme")
 function App() {
-  const [darkTheme, setDarkTheme] = useState(false)
+  const [darkTheme, setDarkTheme] = useState(dark)
   const [viewerOpen, setViewerOpen] = useState(false) //Controls the opening and closing of the playlist viewer
   const [details, setDetails] = useState({ //The playlist information that is displayed in the viewer header
     name: "-",
@@ -28,6 +29,7 @@ function App() {
 
   //Display a playlist in the viewer with provided information
   const viewPlaylist = (name, artists, songCount, length, src) => {
+    // if(name === details.name) return
     setViewerOpen(true)
     setDetails({
       name: name,
