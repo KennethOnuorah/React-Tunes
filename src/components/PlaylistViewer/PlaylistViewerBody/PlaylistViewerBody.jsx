@@ -22,6 +22,14 @@ const PlaylistViewerBody = (props) => {
     getSongs()
   }, [props.details.songCount])
 
+  const setDraggedSong = () => {
+
+  }
+  
+  const setDraggedSongTarget = () => {
+    
+  }
+
   return (
     <section className="playlistViewerBody">
       {

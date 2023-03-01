@@ -1,4 +1,4 @@
-.playlistMenuItemSettings{
+.menuItemContextMenu{
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -11,7 +11,7 @@
   box-shadow: 4px 4px 8px 4px rgba(0, 0, 0, 0.38);
   visibility: hidden;
 }
-.playlistMenuItemSettings button{
+.menuItemContextMenu button{
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -24,7 +24,7 @@
   background-color: transparent;
   transition: color 0.2s ease;
 }
-.playlistMenuItemSettings button:hover{
+.menuItemContextMenu button:hover{
   color: #00d9ff;
   cursor: pointer;
 }
