@@ -41,7 +41,7 @@ function App() {
   }
 
   //Update the playlist currently displayed in the viewer, if necessary
-  //Usually used when renaming a menu item
+  //Usually used when renaming a menu item or uploading new songs
   const updateViewedPlaylist = (updates, requestedPlaylist) => {
     if (details.name !== requestedPlaylist) return
     const updatedDetails = {...details, ...updates}

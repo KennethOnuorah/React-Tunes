@@ -1,31 +1,32 @@
-.song{
+.songDark{
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   padding: 15px;
-  background-color: rgb(243, 243, 243);
+  background-color: rgb(33, 33, 33);
+  color: white;
   border-radius: 15px;
   min-height: 60px;
   transition: border 0.1s ease-in-out;
 }
-.darkThemeSong{
+/* .darkThemeSong{
   background-color: rgb(33, 33, 33);
   color: white;
-}
+} */
 
-.songLeftSection{
+.songLeftSectionDark{
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  color: black;
-}
-.darkThemeLeftSection{
   color: white;
 }
+/* .darkThemeLeftSection{
+  color: white;
+} */
 
-.playBtn{
+.playBtnDark{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,15 +35,16 @@
   border: none;
   background-color: transparent;
   cursor: pointer;
+  color: white;
   transition: opacity 0.2s ease, transform 0.1s ease;
 }
-.darkThemePlayBtn{
+/* .darkThemePlayBtn{
   color: white;
-}
-.playBtn:hover{
+} */
+.playBtnDark:hover{
   opacity: 0.6;
 }
-.playBtn:active{
+.playBtnDark:active{
   transform: scale(0.85);
 }
 
