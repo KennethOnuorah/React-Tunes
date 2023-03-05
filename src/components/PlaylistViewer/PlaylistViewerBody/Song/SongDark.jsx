@@ -2,9 +2,9 @@ import { useEffect, useState, useRef } from 'react'
 // import * as localforage from 'localforage'
 
 import { BsPlayFill as Play, BsPause as Pause} from 'react-icons/bs'
-import './Song.css'
+import './SongDark.css'
 
-const Song = (props) => {
+const SongDark = (props) => {
   const [songName, setSongName] = useState("")
   const [draggedOver, setDraggedOver] = useState(false)
   const songRef = useRef()
@@ -41,7 +41,7 @@ const Song = (props) => {
   
   return (
     <section 
-      className="song"
+      className="songDark"
       ref={songRef}
       onDragStart={() => props.setDraggedSong(props.songName)}
       onDragEnd={() => props.rearrangeSongs()}
@@ -55,12 +55,12 @@ const Song = (props) => {
         props.setDraggedSongTarget("")
       }}
       style={{
-        border: draggedOver ? "2px solid black" : "0px solid transparent"
+        border: draggedOver ? "2px solid white" : "0px solid transparent"
       }}
       draggable>
-      <div className="songLeftSection">
+      <div className="songLeftSectionDark">
         <button 
-          className='playBtn'
+          className='playBtnDark'
           ref={playBtnRef}
         >
           <Play size={25}/>
@@ -83,4 +83,5 @@ const Song = (props) => {
   )
 }
 
-export default Song
+export default SongDark
+
