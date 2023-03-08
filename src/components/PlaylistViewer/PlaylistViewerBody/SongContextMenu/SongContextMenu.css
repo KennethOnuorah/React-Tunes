@@ -1,0 +1,30 @@
+.songContextMenu{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 175px;
+  background-color: rgb(59, 59, 59);
+  z-index: 99;
+  top: 0%;
+  opacity: 0.75;
+  box-shadow: 4px 4px 8px 4px rgba(0, 0, 0, 0.38);
+  visibility: hidden;
+}
+.songContextMenu button{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 15px;
+  font-size: medium;
+  font-family: 'Raleway', sans-serif;
+  border: none;
+  outline: none;
+  color: lightgray;
+  background-color: transparent;
+  transition: color 0.2s ease;
+}
+.songContextMenu button:hover{
+  color: #00d9ff;
+  cursor: pointer;
+}

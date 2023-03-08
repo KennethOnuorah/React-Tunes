@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect, createContext, useContext } from 'react'
 import { useUpdateEffect } from 'react-use'
-import * as localforage from "localforage"
 import { MenuContext } from '../../App'
+import { rearrangeMenuItems } from '../../utils/Rearrange'
+
+import * as localforage from "localforage"
 
 import { SiApplemusic as AppLogo } from 'react-icons/si'
 import { BiSun as Sun, BiMoon as Moon } from 'react-icons/bi'
@@ -23,9 +25,7 @@ const PlaylistMenu = (props) => {
   const [renameRequestID, setRenameRequestID] = useState("")
   const [searchEntry, setSearchEntry] = useState("")
 
-  const { 
-    removeViewedPlaylist, 
-    requestedDeletionFromViewer } = useContext(MenuContext)
+  const { removeViewedPlaylist, requestedDeletionFromViewer } = useContext(MenuContext)
 
   const draggedPlaylist = useRef("") 
   const draggedPlaylistTarget = useRef("")
@@ -142,19 +142,7 @@ const PlaylistMenu = (props) => {
   const setDraggedPlaylist = (name) => draggedPlaylist.current = name
   const setDraggedPlaylistTarget = (name) => draggedPlaylistTarget.current = name
   const rearrangePlaylists = () => {
-    const list = playlistList
-    const startIndex = list.indexOf(draggedPlaylist.current)
-    const endIndex = list.indexOf(draggedPlaylistTarget.current)
-    const draggedDown = endIndex > startIndex ? true : false
-    if(draggedPlaylist.current !== draggedPlaylistTarget.current && draggedPlaylistTarget.current !== ""){
-      for (let i = startIndex; draggedDown ? i < endIndex : i > endIndex; draggedDown ? i++ : i--) {
-        const temp = list[i]
-        const temp2 = list[draggedDown ? i+1 : i-1]
-        list[draggedDown ? i+1 : i-1] = temp
-        list[i] = temp2
-      }
-      setPlaylistList([...list])
-    }
+    rearrangeMenuItems([[...playlistList]], [setPlaylistList], draggedPlaylist, draggedPlaylistTarget)
     setDraggedPlaylist("")
     setDraggedPlaylistTarget("")
   }
@@ -209,7 +197,7 @@ const PlaylistMenu = (props) => {
         </div>
       </div>
       <div className="playlistContainer">
-        <MenuItemContext.Provider value={{ playlistList, positionContextMenu, setDraggedPlaylist, setDraggedPlaylistTarget, rearrangePlaylists, replaceOldPlaylistName,clearRenameRequestID, renameDuplicate}}
+        <MenuItemContext.Provider value={{playlistList, positionContextMenu, setDraggedPlaylist, setDraggedPlaylistTarget, rearrangePlaylists, replaceOldPlaylistName,clearRenameRequestID, renameDuplicate}}
         >
           {playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
             <MenuItem
