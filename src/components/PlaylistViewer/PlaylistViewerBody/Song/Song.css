@@ -4,13 +4,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px;
-  background-color: rgb(243, 243, 243);
+  /* background-color: rgb(243, 243, 243); */
   border-radius: 15px;
   min-height: 60px;
   transition: border 0.1s ease-in-out;
 }
 .darkThemeSong{
-  background-color: rgb(33, 33, 33);
+  /* background-color: rgb(33, 33, 33); */
   color: white;
 }
 

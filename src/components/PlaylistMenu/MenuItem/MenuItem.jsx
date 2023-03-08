@@ -25,7 +25,7 @@ const MenuItem = (props) => {
 
   const updatePlaylistName = async() => {
     if(newName.current !== ''){
-      doRename(clearRenameRequestID, oldName, playlistName, setPlaylistName, renameDuplicate, newName, renameDetailsName, updateViewedPlaylist, replaceOldPlaylistName, setRenameMode)
+      doRename(clearRenameRequestID, oldName, playlistName, setPlaylistName, renameDuplicate, newName, renameDetails, updateViewedPlaylist, replaceOldPlaylistName, setRenameMode)
       const keys = await localforage.keys()
       const songNames = keys.map((k) => k.split(': ')[0].includes(oldName.current) && k.split(': ')[1]).filter((t) => typeof(t) != "boolean")
       for(let i = 0; i < songNames.length; i++){
@@ -37,11 +37,11 @@ const MenuItem = (props) => {
     }
   }
 
-  const doRename = (clearRenameRequestID, oldName, playlistName, setPlaylistName, renameDuplicate, newName, renameDetailsName, updateViewedPlaylist, replaceOldPlaylistName, setRenameMode) => {
+  const doRename = (clearRenameRequestID, oldName, playlistName, setPlaylistName, renameDuplicate, newName, renameDetails, updateViewedPlaylist, replaceOldPlaylistName, setRenameMode) => {
     clearRenameRequestID()
     oldName.current = playlistName
     setPlaylistName(renameDuplicate(newName.current))
-    renameDetailsName(oldName.current, newName.current)
+    renameDetails(oldName.current, newName.current)
     updateViewedPlaylist({
       name: renameDuplicate(newName.current)
     }, playlistName)
@@ -50,7 +50,7 @@ const MenuItem = (props) => {
     setRenameMode(false)
   }
 
-  const renameDetailsName = async(oldName, newName) => {
+  const renameDetails = async(oldName, newName) => {
     try {
       const playlistDetails = await localforage.getItem(`_playlist_details`)
       playlistDetails[newName] = playlistDetails[oldName]

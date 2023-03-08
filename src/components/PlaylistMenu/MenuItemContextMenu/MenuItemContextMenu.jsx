@@ -6,10 +6,10 @@ import './MenuItemContextMenu.css'
 const MenuItemContextMenu = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false)
 
-  const setInvisible = () => setVisible(false)
+  const setToInvisible = () => setVisible(false)
 
   useImperativeHandle(ref, () => ({
-    setInvisible: setInvisible
+    setInvisible: setToInvisible
   }))
 
   useEffect(() => {
@@ -30,8 +30,8 @@ const MenuItemContextMenu = forwardRef((props, ref) => {
         onClick={() => {
           setVisible(false)
           props.getRenameRequest(props.targetElementID)
-        }
-      }>
+        }}
+      >
         <Rename size={20}/>
         Rename playlist
       </button>

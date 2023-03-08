@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react"
 import * as localforage from "localforage"
 
 import Song from "./Song/Song"
-import SongDark from "./Song/SongDark"
+import SongContextMenu from "./SongContextMenu/SongContextMenu"
 import "./PlaylistViewerBody.css"
 
 const PlaylistViewerBody = (props) => {
@@ -10,8 +10,11 @@ const PlaylistViewerBody = (props) => {
   const [artists, setArtists] = useState([])
   const [durations, setDurations] = useState([])
   const [rearrangementCount, setRearrangementCount] = useState(0)
+  const [menuCoordinates, setMenuCoordinates] = useState({x: 0, y: 0})
+  
   const draggedSong = useRef("")
   const draggedSongTarget = useRef("")
+  const songContextMenuRef = useRef()
 
   useEffect(() => {
     const update = async() => {
@@ -23,6 +26,10 @@ const PlaylistViewerBody = (props) => {
     update()
   }, [props.details.songCount, rearrangementCount])
 
+  const positionContextMenu = (xPos, yPos, ref) => {
+
+  }
+
   const setDraggedSong = (name) => draggedSong.current = name
   const setDraggedSongTarget = (name) => draggedSongTarget.current = name
   const rearrangeSongs = async() => {
@@ -33,7 +40,7 @@ const PlaylistViewerBody = (props) => {
     const start = songList.indexOf(draggedSong.current)
     const end = songList.indexOf(draggedSongTarget.current)
     const draggedDown = end > start ? true : false
-    if(draggedSongTarget.current !== ""){
+    if(draggedSong.current !== draggedSongTarget.current || draggedSongTarget.current !== ""){
       for (let i = start; draggedDown ? i < end : i > end; draggedDown ? i++ : i--) {
         const sTemp = songList[i]
         const aTemp = artistList[i]
@@ -54,6 +61,10 @@ const PlaylistViewerBody = (props) => {
       await localforage.setItem("_playlist_details", details)
       setRearrangementCount(rearrangementCount + 1)
     }
+    else{
+      setDraggedSong("")
+      setDraggedSongTarget("")
+    }
     setDraggedSong("")
     setDraggedSongTarget("")
   }
@@ -61,27 +72,25 @@ const PlaylistViewerBody = (props) => {
   return (
     <section className="playlistViewerBody">
       {
-        songs.map((song) => props.darkTheme ?
-          <SongDark
-            key={`${song}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`}
-            songName={song} 
-            songArtist={artists[songs.indexOf(song)]}
-            songDuration={durations[songs.indexOf(song)]}
-            setDraggedSong={setDraggedSong}
-            setDraggedSongTarget={setDraggedSongTarget}
-            rearrangeSongs={rearrangeSongs}
-          /> :
+        songs.map((song) =>
           <Song
             key={`${song}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`}
+            darkTheme={props.darkTheme}
             songName={song} 
             songArtist={artists[songs.indexOf(song)]}
             songDuration={durations[songs.indexOf(song)]}
+            playlist={props.details.name}
             setDraggedSong={setDraggedSong}
             setDraggedSongTarget={setDraggedSongTarget}
             rearrangeSongs={rearrangeSongs}
           />
         )
       }
+      <SongContextMenu
+        ref={songContextMenuRef}
+        xPos={menuCoordinates.x}
+        yPos={menuCoordinates.y} 
+      />
     </section>
   )
 }
