@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react"
 import * as localforage from "localforage"
 
 import Song from "./Song/Song"
-import SongContextMenu from "./SongContextMenu/SongContextMenu"
 import "./PlaylistViewerBody.css"
 
 const PlaylistViewerBody = (props) => {
@@ -10,11 +9,9 @@ const PlaylistViewerBody = (props) => {
   const [artists, setArtists] = useState([])
   const [durations, setDurations] = useState([])
   const [rearrangementCount, setRearrangementCount] = useState(0)
-  const [menuCoordinates, setMenuCoordinates] = useState({x: 0, y: 0})
   
   const draggedSong = useRef("")
   const draggedSongTarget = useRef("")
-  const songContextMenuRef = useRef()
 
   useEffect(() => {
     const update = async() => {
@@ -25,10 +22,6 @@ const PlaylistViewerBody = (props) => {
     }
     update()
   }, [props.details.songCount, rearrangementCount])
-
-  const positionContextMenu = (xPos, yPos, ref) => {
-
-  }
 
   const setDraggedSong = (name) => draggedSong.current = name
   const setDraggedSongTarget = (name) => draggedSongTarget.current = name
@@ -76,21 +69,17 @@ const PlaylistViewerBody = (props) => {
           <Song
             key={`${song}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`}
             darkTheme={props.darkTheme}
+            playlist={props.details.name}
             songName={song} 
             songArtist={artists[songs.indexOf(song)]}
             songDuration={durations[songs.indexOf(song)]}
-            playlist={props.details.name}
             setDraggedSong={setDraggedSong}
             setDraggedSongTarget={setDraggedSongTarget}
             rearrangeSongs={rearrangeSongs}
           />
         )
       }
-      <SongContextMenu
-        ref={songContextMenuRef}
-        xPos={menuCoordinates.x}
-        yPos={menuCoordinates.y} 
-      />
+    {/* FORGET THE CONTEXT MENU. JUST PUT A TRASH BUTTON NEXT TO THE SONG DURATION (MUCH EASIER) */}
     </section>
   )
 }

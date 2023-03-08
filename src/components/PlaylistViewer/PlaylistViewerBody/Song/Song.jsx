@@ -1,16 +1,12 @@
-import {useEffect, useState, useRef} from "react"
+import {useState} from "react"
 
 import {BsPlayFill as Play, BsPause as Pause} from "react-icons/bs"
+import { IoTrashOutline as Delete } from "react-icons/io5"
 import "./Song.css"
 
 const Song = (props) => {
-  const [songName, setSongName] = useState("")
+  const [songName, setSongName] = useState(`${props.songArtist} - ${props.songName}`)
   const [draggedOver, setDraggedOver] = useState(false)
-
-  //Setting the song name
-  useEffect(() => {
-    setSongName(`${props.songArtist} - ${props.songName}`)
-  }, [])
 
   const toDigitalFormat = (seconds) => {
     let sec = 0
@@ -38,7 +34,6 @@ const Song = (props) => {
   return (
     <section
       className="song"
-      id={`${props.playlist} - ${songName}`}
       onDragStart={() => props.setDraggedSong(props.songName)}
       onDragEnd={() => props.rearrangeSongs()}
       onDragOver={(e) => {
@@ -51,7 +46,7 @@ const Song = (props) => {
         props.setDraggedSongTarget("")
       }}
       style={{
-        border: draggedOver ? "2px solid black" : "0px solid transparent",
+        border: draggedOver ? props.darkTheme ? "2px solid white" : "2px solid black" : "0px solid transparent",
         backgroundColor: props.darkTheme ? "rgb(33, 33, 33)" : "rgb(243, 243, 243)",
       }}
       draggable
@@ -82,6 +77,14 @@ const Song = (props) => {
         }}
       >
         {toDigitalFormat(props.songDuration)}
+        <button
+          className="removeSongBtn"
+          style={{
+            color: props.darkTheme ? "white" : "black"
+          }}
+        >
+          <Delete size={25}/>
+        </button>
       </div>
     </section>
   )

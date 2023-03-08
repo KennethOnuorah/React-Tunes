@@ -4,25 +4,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px;
-  /* background-color: rgb(243, 243, 243); */
   border-radius: 15px;
   min-height: 60px;
   transition: border 0.1s ease-in-out;
 }
-.darkThemeSong{
-  /* background-color: rgb(33, 33, 33); */
-  color: white;
-}
-
 .songLeftSection{
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 1rem;
   color: black;
-}
-.darkThemeLeftSection{
-  color: white;
 }
 
 .playBtn{
@@ -35,9 +26,6 @@
   background-color: transparent;
   cursor: pointer;
   transition: opacity 0.2s ease, transform 0.1s ease;
-}
-.darkThemePlayBtn{
-  color: white;
 }
 .playBtn:hover{
   opacity: 0.6;
@@ -56,5 +44,23 @@
   font-size: x-large;
 }
 .songLength{
+  display: flex;
+  align-items: start;
+  gap: 1.5rem;
   text-align: right;
+}
+.removeSongBtn{
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+.removeSongBtn:hover{
+  opacity: 0.6;
+}
+.removeSongBtn:active{
+  transform: scale(0.85);
+}
+.removeSongBtn:not(:active){
+  transform: scale(1);
 }

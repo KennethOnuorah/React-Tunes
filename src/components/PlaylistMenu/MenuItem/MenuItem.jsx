@@ -82,7 +82,7 @@ const MenuItem = (props) => {
       onContextMenu={(e) => {
         e.preventDefault()
         if(!renameMode)
-          positionContextMenu(e.pageX, e.pageY, itemRef)
+          positionContextMenu(e.clientX, e.clientY, itemRef)
       }}
       onDragStart={() => setDraggedPlaylist(playlistName)}
       onDragEnd={() => rearrangePlaylists()}
