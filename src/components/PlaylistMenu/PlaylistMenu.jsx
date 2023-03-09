@@ -197,16 +197,21 @@ const PlaylistMenu = (props) => {
         </div>
       </div>
       <div className="playlistContainer">
-        <MenuItemContext.Provider value={{playlistList, positionContextMenu, setDraggedPlaylist, setDraggedPlaylistTarget, rearrangePlaylists, replaceOldPlaylistName,clearRenameRequestID, renameDuplicate}}
-        >
-          {playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
-            <MenuItem
-              key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
-              name={name}
-              enableRenameMode={renameRequestID === "pl_"+name ? enableRenameMode : false}
-            />)
-          }
-        </MenuItemContext.Provider>
+        {playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
+          <MenuItem
+            key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
+            name={name}
+            enableRenameMode={renameRequestID === "pl_"+name ? enableRenameMode : false}
+            renameDuplicate={renameDuplicate}
+            playlistList={playlistList}
+            positionContextMenu={positionContextMenu}
+            setDraggedPlaylist={setDraggedPlaylist}
+            setDraggedPlaylistTarget={setDraggedPlaylistTarget}
+            rearrangePlaylists={rearrangePlaylists}
+            replaceOldPlaylistName={replaceOldPlaylistName}
+            clearRenameRequestID={clearRenameRequestID}
+          />)
+        }
         <MenuItemContextMenu
           ref={contextMenuRef}
           xPos={menuCoordinates.x}

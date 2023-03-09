@@ -3,7 +3,7 @@ import * as localforage from "localforage"
 import * as id3 from "id3js"
 import { ViewerContext } from "../../../App"
 
-import { HiOutlineUpload as UploadSong } from "react-icons/hi"
+import { RxUpload as UploadSong } from "react-icons/rx"
 import { IoImageOutline as UploadImg, IoTrashOutline as Trash } from "react-icons/io5"
 import { BsPlayFill as Play, BsPause as Pause } from "react-icons/bs"
 
@@ -136,7 +136,9 @@ const PlaylistViewerHeader = (props) => {
       <div className="headerBtns">
         <button
           title="Begin playlist"
-          style={{backgroundColor: "#0ecfe6"}} 
+          style={{
+            backgroundColor: props.darkTheme ? "#0ecfe6" : "#00e4ff"
+          }} 
         >
           <Play size={30} />
         </button>
@@ -153,8 +155,16 @@ const PlaylistViewerHeader = (props) => {
           htmlFor="uploadSongs"
           title="Upload song(s)"
           onClick={() => handleBtnClick(songUploadBtnRef)}
+          style={{
+            backgroundColor: props.darkTheme ? "white" : "#2b2b2b"
+          }}
         >
-          <UploadSong size={25} />
+          <UploadSong 
+            size={25}
+            style={{
+              color: props.darkTheme ? "#2b2b2b" : "white"
+            }}
+          />
         </button>
         <input 
           hidden 
@@ -168,14 +178,30 @@ const PlaylistViewerHeader = (props) => {
           htmlFor="uploadImage" 
           title="Upload cover art"
           onClick={() => handleBtnClick(fileUploadBtnRef)}
+          style={{
+            backgroundColor: props.darkTheme ? "white" : "#2b2b2b"
+          }}
         >
-          <UploadImg size={25}/>
+          <UploadImg 
+            size={25}
+            style={{
+              color: props.darkTheme ? "#2b2b2b" : "white"
+            }}
+          />
         </button>
         <button 
           title="Delete playlist"
           onClick={() => deletePlaylist()}
+          style={{
+            backgroundColor: props.darkTheme ? "white" : "#2b2b2b"
+          }}
         >
-          <Trash size={25} />
+          <Trash 
+            size={25}
+            style={{
+              color: props.darkTheme ? "#2b2b2b" : "white"
+            }}
+          />
         </button>
       </div>
     </header>
