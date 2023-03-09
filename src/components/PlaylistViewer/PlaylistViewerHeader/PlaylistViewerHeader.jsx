@@ -20,7 +20,7 @@ const PlaylistViewerHeader = (props) => {
     updateViewedPlaylist, 
     removeViewedPlaylist, 
     artistsText, 
-    deletePlaylistFromViewer } = useContext(ViewerContext)
+    deleteMenuItemFromViewer } = useContext(ViewerContext)
 
   useEffect(() => {
     const updateColorTheme = () => {
@@ -49,8 +49,8 @@ const PlaylistViewerHeader = (props) => {
       reader.onloadend = async() => {
         let audio = new Audio(reader.result)
         audio.onloadedmetadata = async() => {
-          playlistDetails[props.details.name]["totalLength"] += Math.round(audio.duration)
-          playlistDetails[props.details.name]["allSongDurations"].push(Math.round(audio.duration))
+          playlistDetails[props.details.name]["totalLength"] += Math.floor(audio.duration)
+          playlistDetails[props.details.name]["allSongDurations"].push(Math.floor(audio.duration))
           await localforage.setItem(`_playlist_details`, playlistDetails)
         }
         await localforage.setItem(`${props.details.name}: ${tags.artist} - ${tags.title}`, reader.result)
@@ -83,7 +83,7 @@ const PlaylistViewerHeader = (props) => {
   const deletePlaylist = () => {
     if(!confirm(`Playlist "${props.details.name}" will be deleted. Press OK to proceed.`)) return
     removeViewedPlaylist(props.details.name)
-    deletePlaylistFromViewer(props.details.name)
+    deleteMenuItemFromViewer(props.details.name)
   }
 
   const setTimeLength = (seconds) => {

@@ -1,11 +1,12 @@
-import {useState} from "react"
+import * as localforage from "localforage"
+import {useRef, useState} from "react"
 
 import {BsPlayFill as Play, BsPause as Pause} from "react-icons/bs"
 import { IoTrashOutline as Delete } from "react-icons/io5"
 import "./Song.css"
 
 const Song = (props) => {
-  const [songName, setSongName] = useState(`${props.songArtist} - ${props.songName}`)
+  const songName = useRef(`${props.songArtist} - ${props.songName}`)
   const [draggedOver, setDraggedOver] = useState(false)
 
   const toDigitalFormat = (seconds) => {
@@ -79,6 +80,14 @@ const Song = (props) => {
         {toDigitalFormat(props.songDuration)}
         <button
           className="removeSongBtn"
+          onClick={async() => {
+            if(!confirm(`"${songName.current}" will be deleted from playlist "${props.playlistName}." Press OK to confirm deletion.`)) return
+            props.deleteSong(
+              props.playlistName, 
+              {name: props.songName, artist: props.songArtist, duration: props.songDuration},
+              `${props.playlistName}: ${songName.current}`
+            )
+          }}
           style={{
             color: props.darkTheme ? "white" : "black"
           }}

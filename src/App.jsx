@@ -25,11 +25,10 @@ function App() {
   const [requestedDeletionFromViewer, setRequestedDeletionFromViewer] = useState("")
 
   const toggleDarkTheme = () => setDarkTheme(!darkTheme)
-  const deletePlaylistFromViewer = (name) => setRequestedDeletionFromViewer(name)
+  const deleteMenuItemFromViewer = (name) => setRequestedDeletionFromViewer(name)
 
   //Display a playlist in the viewer with provided information
   const viewPlaylist = (name, artists, songCount, length, src) => {
-    // if(name === details.name) return
     setViewerOpen(true)
     setDetails({
       name: name,
@@ -41,7 +40,7 @@ function App() {
   }
 
   //Update the playlist currently displayed in the viewer, if necessary
-  //Usually used when renaming a menu item or uploading new songs
+  //Usually used when renaming a menu item, uploading, or removing songs
   const updateViewedPlaylist = (updates, requestedPlaylist) => {
     if (details.name !== requestedPlaylist) return
     const updatedDetails = {...details, ...updates}
@@ -131,7 +130,7 @@ function App() {
           updateViewedPlaylist, 
           removeViewedPlaylist,
           artistsText,
-          deletePlaylistFromViewer,
+          deleteMenuItemFromViewer,
           details
         }}
       >
