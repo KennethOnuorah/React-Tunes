@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useContext } from "react"
+import { ViewerContext } from "../../../App"
 import * as localforage from "localforage"
 
 import Song from "./Song/Song"
@@ -12,6 +13,10 @@ const PlaylistViewerBody = (props) => {
   
   const draggedSong = useRef("")
   const draggedSongTarget = useRef("")
+  const { updateViewedPlaylist, 
+    removeViewedPlaylist, 
+    artistsText, 
+    deletePlaylistFromViewer } = useContext(ViewerContext)
 
   useEffect(() => {
     const update = async() => {
@@ -53,6 +58,9 @@ const PlaylistViewerBody = (props) => {
       details[props.details.name]["allSongDurations"] = durationList
       await localforage.setItem("_playlist_details", details)
       setRearrangementCount(rearrangementCount + 1)
+      updateViewedPlaylist({
+        artists: artistList
+      }, props.details.name)
     }
     else{
       setDraggedSong("")
@@ -62,6 +70,26 @@ const PlaylistViewerBody = (props) => {
     setDraggedSongTarget("")
   }
 
+  const deleteSong = async(playlistName, songInfo={name: "", artist: "", duration: 0}, songB64Key) => {
+    let details = await localforage.getItem("_playlist_details")
+    const names = details[playlistName]["allSongs"]
+    const artists = details[playlistName]["allArtists"]
+    const durations = details[playlistName]["allSongDurations"]
+    const removedIndex = names.indexOf(songInfo.name)
+    await localforage.removeItem(songB64Key)
+    details[playlistName]["allSongs"] = names.filter((n) => names.indexOf(n) !== removedIndex)
+    details[playlistName]["allArtists"] = artists.filter((a) => artists.indexOf(a) !== removedIndex)
+    details[playlistName]["allSongDurations"] = durations.filter((d) => durations.indexOf(d) !== removedIndex)
+    let newLength = 0
+    details[playlistName]["allSongDurations"].forEach((d) => newLength += d)
+    await localforage.setItem("_playlist_details", details)
+    updateViewedPlaylist({
+      artists: details[playlistName]["allArtists"],
+      songCount: [...details[playlistName]["allSongs"]].length,
+      length: newLength
+    }, playlistName)
+  }
+
   return (
     <section className="playlistViewerBody">
       {
@@ -69,17 +97,17 @@ const PlaylistViewerBody = (props) => {
           <Song
             key={`${song}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`}
             darkTheme={props.darkTheme}
-            playlist={props.details.name}
+            playlistName={props.details.name}
             songName={song} 
             songArtist={artists[songs.indexOf(song)]}
             songDuration={durations[songs.indexOf(song)]}
             setDraggedSong={setDraggedSong}
             setDraggedSongTarget={setDraggedSongTarget}
             rearrangeSongs={rearrangeSongs}
+            deleteSong={deleteSong}
           />
         )
       }
-    {/* FORGET THE CONTEXT MENU. JUST PUT A TRASH BUTTON NEXT TO THE SONG DURATION (MUCH EASIER) */}
     </section>
   )
 }
