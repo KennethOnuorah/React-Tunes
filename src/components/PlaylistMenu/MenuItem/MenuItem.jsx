@@ -11,13 +11,6 @@ import * as localforage from 'localforage'
 const MenuItem = (props) => {
   const [playlistName, setPlaylistName] = useState(props.name)
   const [renameMode, setRenameMode] = useState(props.enableRenameMode)
-  const { positionContextMenu, 
-    setDraggedPlaylist, 
-    setDraggedPlaylistTarget, 
-    rearrangePlaylists, 
-    replaceOldPlaylistName, 
-    clearRenameRequestID,
-    renameDuplicate } = useContext(MenuItemContext)
   const { viewPlaylist, updateViewedPlaylist } = useContext(MenuContext)
   const newName = useRef("")
   const oldName = useRef("")
@@ -25,7 +18,7 @@ const MenuItem = (props) => {
 
   const updatePlaylistName = async() => {
     if(newName.current !== ''){
-      doRename(clearRenameRequestID, oldName, playlistName, setPlaylistName, renameDuplicate, newName, renameDetails, updateViewedPlaylist, replaceOldPlaylistName, setRenameMode)
+      doRename()
       const keys = await localforage.keys()
       const songNames = keys.map((k) => k.split(': ')[0].includes(oldName.current) && k.split(': ')[1]).filter((t) => typeof(t) != "boolean")
       for(let i = 0; i < songNames.length; i++){
@@ -37,15 +30,15 @@ const MenuItem = (props) => {
     }
   }
 
-  const doRename = (clearRenameRequestID, oldName, playlistName, setPlaylistName, renameDuplicate, newName, renameDetails, updateViewedPlaylist, replaceOldPlaylistName, setRenameMode) => {
-    clearRenameRequestID()
+  const doRename = () => {
+    props.clearRenameRequestID()
     oldName.current = playlistName
-    setPlaylistName(renameDuplicate(newName.current))
+    setPlaylistName(props.renameDuplicate(newName.current))
     renameDetails(oldName.current, newName.current)
     updateViewedPlaylist({
-      name: renameDuplicate(newName.current)
+      name: props.renameDuplicate(newName.current)
     }, playlistName)
-    replaceOldPlaylistName(oldName.current, newName.current)
+    props.replaceOldPlaylistName(oldName.current, newName.current)
     console.log("Renaming completed for:", `"${oldName.current}"`, "\nNew name is:", `"${newName.current}"`)
     setRenameMode(false)
   }
@@ -82,15 +75,15 @@ const MenuItem = (props) => {
       onContextMenu={(e) => {
         e.preventDefault()
         if(!renameMode)
-          positionContextMenu(e.clientX, e.clientY, itemRef)
+          props.positionContextMenu(e.clientX, e.clientY, itemRef)
       }}
-      onDragStart={() => setDraggedPlaylist(playlistName)}
-      onDragEnd={() => rearrangePlaylists()}
+      onDragStart={() => props.setDraggedPlaylist(playlistName)}
+      onDragEnd={() => props.rearrangePlaylists()}
       onDragOver={(e) => {
         e.preventDefault()
-        setDraggedPlaylistTarget(playlistName)
+        props.setDraggedPlaylistTarget(playlistName)
       }}
-      onDragExit={() => setDraggedPlaylistTarget("")}
+      onDragExit={() => props.setDraggedPlaylistTarget("")}
       draggable={renameMode ? false : true}>
       <div className="menuItemLeft">
         <Icon color='lightgrey' size={25}/>
@@ -116,7 +109,7 @@ const MenuItem = (props) => {
         <button
           className='cancelRename'
           onClick={() => {
-            clearRenameRequestID()
+            props.clearRenameRequestID()
             newName.current = ""
             setRenameMode(false)
             console.log("Renaming cancelled for:", `"${playlistName}"`)
