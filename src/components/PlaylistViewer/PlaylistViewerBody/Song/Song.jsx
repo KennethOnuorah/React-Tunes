@@ -1,5 +1,7 @@
-import * as localforage from "localforage"
 import {useRef, useState} from "react"
+
+import * as localforage from "localforage"
+import getConvertedTime from "../../../../utils/getConvertedTime"
 
 import {BsPlayFill as Play, BsPause as Pause} from "react-icons/bs"
 import { IoTrashOutline as Delete } from "react-icons/io5"
@@ -8,29 +10,6 @@ import "./Song.css"
 const Song = (props) => {
   const songName = useRef(`${props.songArtist} - ${props.songName}`)
   const [draggedOver, setDraggedOver] = useState(false)
-
-  const toDigitalFormat = (seconds) => {
-    let sec = 0
-    let min = 0
-    let hr = 0
-    while (seconds > 0) {
-      if (0 < seconds && seconds < 59) {
-        sec = seconds
-        seconds = 0
-      } else if (60 < seconds && seconds < 3599) {
-        min = Math.floor(seconds / 60)
-        seconds %= 60
-      } else if (seconds > 3600) {
-        hr = Math.floor(seconds / 3600)
-        seconds %= 3600
-      }
-    }
-    const secText = sec.toString().padStart(2, "0")
-    const minText = hr > 0 ? min.toString().padStart(2, "0") : min.toString()
-    const hrText = hr > 0 ? hr.toString().padStart(2, "0") + ":" : ""
-    let time = `${hrText}${minText}:${secText}`
-    return time
-  }
 
   return (
     <section
@@ -77,7 +56,7 @@ const Song = (props) => {
           color: props.darkTheme ? "white" : "black"
         }}
       >
-        {toDigitalFormat(props.songDuration)}
+        {getConvertedTime(props.songDuration, true)}
         <button
           className="removeSongBtn"
           onClick={async() => {
