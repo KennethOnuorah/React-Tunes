@@ -1,6 +1,7 @@
 import { useEffect, useRef, useContext } from "react"
 import * as localforage from "localforage"
 import * as id3 from "id3js"
+import getConvertedTime from "../../../utils/getConvertedTime"
 import { ViewerContext } from "../../../App"
 
 import { RxUpload as UploadSong } from "react-icons/rx"
@@ -20,7 +21,8 @@ const PlaylistViewerHeader = (props) => {
     updateViewedPlaylist, 
     removeViewedPlaylist, 
     artistsText, 
-    deleteMenuItemFromViewer } = useContext(ViewerContext)
+    deleteMenuItemFromViewer, 
+    startNewPlaylist } = useContext(ViewerContext)
 
   useEffect(() => {
     const updateColorTheme = () => {
@@ -85,27 +87,7 @@ const PlaylistViewerHeader = (props) => {
     removeViewedPlaylist(props.details.name)
     deleteMenuItemFromViewer(props.details.name)
   }
-
-  const setTimeLength = (seconds) => {
-    let sec = 0
-    let min = 0
-    let hr = 0
-    while(seconds > 0){
-      if(0 < seconds && seconds < 59){
-        sec = seconds
-        seconds = 0
-      }else if(60 < seconds && seconds < 3599){
-        min = Math.floor(seconds / 60)
-        seconds %= 60
-      }else if(seconds > 3600){
-        hr = Math.floor(seconds / 3600)
-        seconds %= 3600
-      }
-    }
-    let time = `${hr > 0 ? hr + " hr," : ""} ${min > 0 ? min + " min," : ""} ${sec} sec`
-    return time
-  }
-
+  
   return (
     <header className="playlistViewerHeader" ref={headerRef}>
       <div className="headerInnerContainer">
@@ -129,13 +111,14 @@ const PlaylistViewerHeader = (props) => {
             <br/>
             {props.details.songCount} Song{props.details.songCount === 1 ? "" : 's'}
             <br/>
-            {props.details.length <= 0 ? "0 sec" : setTimeLength(props.details.length)}
+            {props.details.length <= 0 ? "0 sec" : getConvertedTime(props.details.length, false)}
           </div>
         </div>
       </div>
       <div className="headerBtns">
         <button
-          title="Begin playlist"
+          title="Start playlist"
+          onClick={() => startNewPlaylist(props.details.name)}
           style={{
             backgroundColor: props.darkTheme ? "#0ecfe6" : "#00e4ff"
           }} 

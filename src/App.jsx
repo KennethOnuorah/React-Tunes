@@ -8,13 +8,13 @@ import PlaylistViewer from "./components/PlaylistViewer/PlaylistViewer"
 import MusicController from "./components/MusicController/MusicController"
 import "./App.css"
 
+const dark = await localforage.getItem("_dark_theme")
 export const MenuContext = createContext()
 export const ViewerContext = createContext()
-const dark = await localforage.getItem("_dark_theme")
 function App() {
   const [darkTheme, setDarkTheme] = useState(dark)
-  const [viewerOpen, setViewerOpen] = useState(false) //Controls the opening and closing of the playlist viewer
-  const [details, setDetails] = useState({ //The playlist information that is displayed in the viewer header
+  const [viewerOpen, setViewerOpen] = useState(false)
+  const [details, setDetails] = useState({
     name: "-",
     artists: [],
     songCount: 0,
@@ -23,11 +23,12 @@ function App() {
   })
   const [artistsText, setArtistsText] = useState("")
   const [requestedDeletionFromViewer, setRequestedDeletionFromViewer] = useState("")
+  const [startedPlaylist, setStartedPlaylist] = useState("")
 
   const toggleDarkTheme = () => setDarkTheme(!darkTheme)
   const deleteMenuItemFromViewer = (name) => setRequestedDeletionFromViewer(name)
+  const startNewPlaylist = (name) => setStartedPlaylist(name)
 
-  //Display a playlist in the viewer with provided information
   const viewPlaylist = (name, artists, songCount, length, src) => {
     setViewerOpen(true)
     setDetails({
@@ -39,8 +40,6 @@ function App() {
     })
   }
 
-  //Update the playlist currently displayed in the viewer, if necessary
-  //Usually used when renaming a menu item, uploading, or removing songs
   const updateViewedPlaylist = (updates, requestedPlaylist) => {
     if (details.name !== requestedPlaylist) return
     const updatedDetails = {...details, ...updates}
@@ -53,7 +52,6 @@ function App() {
     )
   }
 
-  //Removes the playlist currently displayed in the viewer, if necessary
   const removeViewedPlaylist = (requestedPlaylist) => {
     if (details.name !== requestedPlaylist) return
     setDetails({
@@ -66,20 +64,14 @@ function App() {
     setViewerOpen(false)
   }
 
-  //Set theme on app initialization
   useEffect(() => {
     const setTheme = async () => {
-      try {
-        const theme = await localforage.getItem("_dark_theme")
-        setDarkTheme(theme === null ? false : theme)
-      } catch (err) {
-        console.error(err)
-      }
+      const theme = await localforage.getItem("_dark_theme")
+      setDarkTheme(theme === null ? false : theme)
     }
     setTheme()
   }, [])
 
-  //Updating the list of artists text in header
   useEffect(() => {
     setArtistsText(
       details.artists.length > 0
@@ -95,15 +87,10 @@ function App() {
     )
   }, [details.artists.join()])
 
-  //For saving and updating the color theme
   useUpdateEffect(() => {
     const saveTheme = async () => {
-      try {
-        await localforage.setItem("_dark_theme", darkTheme)
-        console.log("Dark theme has been set to", darkTheme)
-      } catch (err) {
-        console.error(err)
-      }
+      await localforage.setItem("_dark_theme", darkTheme)
+      console.log("Dark theme has been set to", darkTheme)
     }
     saveTheme()
   }, [darkTheme])
@@ -131,14 +118,18 @@ function App() {
           removeViewedPlaylist,
           artistsText,
           deleteMenuItemFromViewer,
-          details
+          details,
+          startNewPlaylist
         }}
       >
         {viewerOpen && (
           <PlaylistViewer darkTheme={darkTheme} details={details} />
         )}
       </ViewerContext.Provider>
-      <MusicController darkTheme={darkTheme} />
+      <MusicController 
+        darkTheme={darkTheme}
+        startedPlaylist={startedPlaylist}
+      />
     </div>
   )
 }
