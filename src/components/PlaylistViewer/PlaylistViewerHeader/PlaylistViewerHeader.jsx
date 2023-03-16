@@ -1,12 +1,12 @@
 import { useEffect, useRef, useContext } from "react"
-import * as localforage from "localforage"
-import * as id3 from "id3js"
+
 import getConvertedTime from "../../../utils/getConvertedTime"
+import { uploadAudio, uploadImage } from "../../../utils/useUpload"
 import { ViewerContext } from "../../../App"
 
 import { RxUpload as UploadSong } from "react-icons/rx"
 import { IoImageOutline as UploadImg, IoTrashOutline as Trash } from "react-icons/io5"
-import { BsPlayFill as Play, BsPause as Pause } from "react-icons/bs"
+import { BsPlayFill as Play } from "react-icons/bs"
 
 import "./PlaylistViewerHeader.css"
 
@@ -42,45 +42,6 @@ const PlaylistViewerHeader = (props) => {
   }, [props.darkTheme])
 
   const handleBtnClick = (ref) => ref.current.click()
-  
-  const uploadSongs = async(fileList) => {
-    const playlistDetails = await localforage.getItem("_playlist_details")
-    for(const file of fileList) {
-      const tags = await id3.fromFile(file)
-      let reader = new FileReader()
-      reader.onloadend = async() => {
-        let audio = new Audio(reader.result)
-        audio.onloadedmetadata = async() => {
-          playlistDetails[props.details.name]["totalLength"] += Math.floor(audio.duration)
-          playlistDetails[props.details.name]["allSongDurations"].push(Math.floor(audio.duration))
-          await localforage.setItem(`_playlist_details`, playlistDetails)
-        }
-        await localforage.setItem(`${props.details.name}: ${tags.artist} - ${tags.title}`, reader.result)
-        updateViewedPlaylist({
-          artists: playlistDetails[props.details.name]["allArtists"],
-          songCount: [...playlistDetails[props.details.name]["allSongs"]].length,
-          length: playlistDetails[props.details.name]["totalLength"]
-        }, props.details.name)
-      }
-      reader.readAsDataURL(file)
-      console.log(`Uploading song: ${tags.artist} - ${tags.title}`)
-      playlistDetails[props.details.name]["allArtists"].push(tags.artist)
-      playlistDetails[props.details.name]["allSongs"].push(tags.title)
-    }
-    await localforage.setItem(`_playlist_details`, playlistDetails)
-    console.log(`Updated playlist details (${new Date().toLocaleTimeString()})\n`, playlistDetails)
-  }
-
-  const uploadCoverArt = (img) => {
-    var reader = new FileReader()
-    reader.onloadend = async() => {
-      const playlistDetails = await localforage.getItem("_playlist_details")
-      playlistDetails[props.details.name]["coverArt"] = reader.result
-      await localforage.setItem("_playlist_details", playlistDetails)
-      updateViewedPlaylist({ artSrc: reader.result }, props.details.name)
-    }
-    reader.readAsDataURL(img)
-  }
 
   const deletePlaylist = () => {
     if(!confirm(`Playlist "${props.details.name}" will be deleted. Press OK to proceed.`)) return
@@ -118,7 +79,10 @@ const PlaylistViewerHeader = (props) => {
       <div className="headerBtns">
         <button
           title="Start playlist"
-          onClick={() => startNewPlaylist(props.details.name)}
+          onClick={() => {
+            if(props.details.songCount <= 0) return
+            startNewPlaylist(props.details.name)
+          }}
           style={{
             backgroundColor: props.darkTheme ? "#0ecfe6" : "#00e4ff"
           }} 
@@ -132,7 +96,7 @@ const PlaylistViewerHeader = (props) => {
           accept=".mp3, .wav, .ogg, .flac"
           id="uploadSongs"
           ref={songUploadBtnRef}
-          onChange={(e) => {uploadSongs(e.target.files)}}
+          onChange={(e) => {uploadAudio(e.target.files, props.details, updateViewedPlaylist)}}
         />
         <button 
           htmlFor="uploadSongs"
@@ -155,7 +119,7 @@ const PlaylistViewerHeader = (props) => {
           accept=".png, .jpeg, .webp"
           id="uploadImage" 
           ref={fileUploadBtnRef} 
-          onChange={(e) => uploadCoverArt(e.target.files[0])}
+          onChange={(e) => uploadImage(e.target.files[0], props.details, updateViewedPlaylist)}
         />
         <button 
           htmlFor="uploadImage" 
