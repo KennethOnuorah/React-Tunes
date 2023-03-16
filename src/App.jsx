@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext } from "react"
 import { useUpdateEffect } from "react-use"
 import { Helmet } from "react-helmet"
+
 import * as localforage from "localforage"
 
 import PlaylistMenu from "./components/PlaylistMenu/PlaylistMenu"
@@ -73,14 +74,13 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const uniqueList = Array.from(new Set(details.artists))
     setArtistsText(
-      details.artists.length > 0
-        ? `${details.artists
-            .filter((a) => details.artists.indexOf(a) < 3)
-            .join(", ")}` +
-            (details.artists.length > 3
-              ? `, and ${details.artists.length - 3} other${
-                  details.artists.length - 3 != 1 ? "s" : ""
+      uniqueList.length > 0
+        ? `${uniqueList.filter((a) => uniqueList.indexOf(a) < 3).join(", ")}` +
+            (uniqueList.length > 3
+              ? `, and ${uniqueList.length - 3} ${
+                  uniqueList.length - 3 != 1 ? "others" : "more"
                 }`
               : ``)
         : "No artists"

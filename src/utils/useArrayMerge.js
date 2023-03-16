@@ -1,6 +1,3 @@
-/**
- * Takes two or more arrays and merges them together into one array, including their corresponding elements.
-*/
 export default function useArrayMerge(arrays=[], separator=""){
   let newList = arrays[0].map((l) => "")
     for(const array of arrays){

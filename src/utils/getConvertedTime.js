@@ -1,10 +1,5 @@
-/**
- * Converts a given number of seconds into a particular format.
- * @param {Number} seconds 
- * @param {Boolean} digitalFormat 
- * @returns 
- */
 export default function getConvertedTime(seconds, digitalFormat=false){
+  seconds = Math.floor(seconds)
   let sec = 0
   let min = 0
   let hr = 0
