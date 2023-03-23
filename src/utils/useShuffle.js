@@ -1,9 +1,10 @@
 export default function useShuffle(array){
-  for (let i = array.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1))
-    const temp = array[i]
-    array[i] = array[j]
-    array[j] = temp
-  }
-  return array
+  array = array.map(value => ({ value, sort: realRandom() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value)
+    return array
+}
+
+function realRandom(){
+  return Math.pow(10, 14) * Math.random() * Math.random()
 }
