@@ -41,7 +41,7 @@ const PlaylistViewerHeader = (props) => {
     updateColorTheme()
   }, [props.darkTheme])
 
-  const handleBtnClick = (ref) => ref.current.click()
+  const handleButtonClick = (ref) => ref.current.click()
 
   const deletePlaylist = () => {
     if(!confirm(`Playlist "${props.details.name}" will be deleted. Press OK to proceed.`)) return
@@ -101,7 +101,7 @@ const PlaylistViewerHeader = (props) => {
         <button 
           htmlFor="uploadSongs"
           title="Upload song(s)"
-          onClick={() => handleBtnClick(songUploadBtnRef)}
+          onClick={() => handleButtonClick(songUploadBtnRef)}
           style={{
             backgroundColor: props.darkTheme ? "white" : "#2b2b2b"
           }}
@@ -124,7 +124,7 @@ const PlaylistViewerHeader = (props) => {
         <button 
           htmlFor="uploadImage" 
           title="Upload cover art"
-          onClick={() => handleBtnClick(fileUploadBtnRef)}
+          onClick={() => handleButtonClick(fileUploadBtnRef)}
           style={{
             backgroundColor: props.darkTheme ? "white" : "#2b2b2b"
           }}
