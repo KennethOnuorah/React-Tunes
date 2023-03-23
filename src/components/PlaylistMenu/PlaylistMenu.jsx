@@ -106,12 +106,17 @@ const PlaylistMenu = (props) => {
       name = `${baseName} (${checkCount+=1})`
     return name
   }
+
   const getRenameRequest = (reqID) => {
     setEnableRenameMode(true)
     setRenameRequestID(reqID)
     console.log("Rename request for:", reqID.split('_')[1])
   }
-  const clearRenameRequestID = () => setRenameRequestID("")
+
+  const clearRenameRequestID = () => {
+    setRenameRequestID("")
+  }
+
   const replaceOldPlaylistName = (oldName, newName) => {
     let allNames = playlistList
     allNames[allNames.indexOf(oldName)] = newName
@@ -123,6 +128,7 @@ const PlaylistMenu = (props) => {
     deletePlaylist(name)
     removeViewedPlaylist(name)
   }
+
   const deletePlaylist = async(name) => {
     setPlaylistList(playlistList.filter((n) => n != name))
     let allPlaylists = await localforage.getItem("_playlist_all")
@@ -139,8 +145,14 @@ const PlaylistMenu = (props) => {
     console.log("Deleted playlist:", `"${name}"`)
   }
 
-  const setDraggedPlaylist = (name) => draggedPlaylist.current = name
-  const setDraggedPlaylistTarget = (name) => draggedPlaylistTarget.current = name
+  const setDraggedPlaylist = (name) => {
+    draggedPlaylist.current = name
+  }
+
+  const setDraggedPlaylistTarget = (name) => {
+    draggedPlaylistTarget.current = name
+  }
+  
   const rearrangePlaylists = () => {
     rearrangeMenuItems([[...playlistList]], [setPlaylistList], draggedPlaylist, draggedPlaylistTarget)
     setDraggedPlaylist("")
