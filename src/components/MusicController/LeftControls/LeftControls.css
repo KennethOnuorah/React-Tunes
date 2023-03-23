@@ -1,0 +1,80 @@
+.leftControls{
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.darkThemeLeftControls{
+  color: white;
+}
+.currentSong{
+  width: max-content;
+  font-size: medium;
+}
+.mainControls{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.controlBtns{
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+}
+.controlBtns button{
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0px;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+.controlBtns button:hover{
+  filter: opacity(0.65);
+}
+.controlBtns button:active{
+  transform: scale(0.85, 0.85);
+}
+.controlBtns button:not(:active){
+  transform: scale(1, 1);
+}
+.songTime{
+  display: flex;
+  position: static;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+.playbackBar{
+  appearance: none;
+  background-color: rgb(51, 51, 51);
+  border-radius: 50px;
+  width: 275px;
+  height: 10px;
+}
+.playbackBar::-moz-range-thumb, .volumeAdjuster::-moz-range-thumb{
+  appearance: none;
+  cursor: pointer;
+  border-color: white;
+  border-radius: 50px;
+  height: 16px;
+  width: 16px;
+  box-shadow: 0px 0px 8px 2px rgba(51, 51, 51, 0.38);
+  transition: box-shadow 0.2s ease-in-out;
+}
+.playbackBar::-moz-range-thumb:hover, .playbackBar::-moz-range-thumb:active{
+  box-shadow: 0px 0px 8px 2px #00d9ff;
+}
+input[type='range']::-webkit-slider-thumb{
+  appearance: none;
+  cursor: pointer;
+  border-color: white;
+  border-radius: 50px;
+  background-color: #00d9ff;
+  height: 16px;
+  width: 16px;
+}
+input[type='range']::-webkit-slider-thumb:active{
+  box-shadow: 0px 0px 8px 2px #00d9ff;
+}

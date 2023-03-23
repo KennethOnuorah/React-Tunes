@@ -1,25 +1,15 @@
 import { useRef, useReducer } from 'react'
 import { useUpdateEffect } from 'react-use'
-import Marquee from 'react-fast-marquee'
-
 import * as localforage from 'localforage'
 
+import LeftControls from './LeftControls/LeftControls'
+import RightControls from './RightControls/RightControls'
 import { songReducer, initialSongState } from '../../reducers/SongReducer'
 import { controlsReducer, initialControlsState } from '../../reducers/ControlsReducer'
 
 import getConvertedTime from '../../utils/getConvertedTime'
 import useArrayMerge from '../../utils/useArrayMerge'
 import useShuffle from '../../utils/useShuffle'
-
-import {
-  BsPlayFill as Play, BsPauseFill as Pause, 
-  BsFillSkipEndFill as SkipForward, BsFillSkipStartFill as SkipBack,
-} from "react-icons/bs"
-import {
-  TbVolumeOff as VolumeMute, TbVolume2 as VolumeSome, TbVolume as VolumeFull,
-  TbArrowsShuffle as Shuffle, TbArrowsRight as Consecutive,
-  TbSquare1 as PlayOnce, TbRepeat as LoopPlaylist, TbRepeatOnce as LoopSong,
-} from "react-icons/tb"
 
 import "./MusicController.css"
 
@@ -142,147 +132,18 @@ const MusicController = (props) => {
           title={`${song.currentPlaylist !== "" ? song.currentPlaylist : "-"}`}
           src={currentPlaylistCoverRef.current} width={50} height={50}
         />
-        <div className={`controllerLeftContainer${props.darkTheme ? ' darkThemeLeftContainer' : ''}`}>
-          <Marquee
-            className='songMarquee'
-            speed={(song.currentSong !== "" && song.currentSong.length > 60) ? 25 : 0} 
-            gradientColor={"white"} 
-            delay={2}
-            style={{
-              maxWidth: "437.833px"
-            }}
-          >
-            <div className="currentSong">
-              {song.currentSong !== "" ? song.currentSong : '-'}
-            </div>
-            {
-              (song.currentSong !== "" && song.currentSong.length > 35) ? 
-                <div style={{opacity: "0"}}>-------------------------</div> : 
-                ""
-            }
-          </Marquee>
-          <div className='mainControls'>
-            <div className="controlBtns">
-              <button 
-                title='Skip back'
-                onClick={() => skipCurrentSong("left")}
-              >
-                <SkipBack size={15}  color={props.darkTheme ? 'white' : 'black'}/>
-              </button>
-              <button 
-                title={
-                  audioRef.current &&
-                  !audioRef.current.paused ? "Pause" : "Play"
-                }
-                onClick={() => {
-                  if(!audioRef.current) return
-                  if(!audioRef.current.paused) {
-                    audioRef.current.pause()
-                    controlsDispatch({type: "set_paused", isPaused: true})
-                  }else{
-                    audioRef.current.play()
-                    controlsDispatch({type: "set_paused", isPaused: false})
-                  }
-                }}
-              >
-                {
-                  controls.paused ?
-                    <Play size={25} color={props.darkTheme ? 'white' : 'black'}/> : 
-                    <Pause size={25} color={props.darkTheme ? 'white' : 'black'}/>
-                }
-              </button>
-              <button 
-                title='Skip forward'
-                onClick={() => skipCurrentSong("right")}
-              >
-                <SkipForward size={15} color={props.darkTheme ? 'white' : 'black'}/>
-              </button>
-            </div>
-            <div className='songTime'>
-              <div style={{ width: "30px", textAlign: "right" }}>
-                {song.currentTime}
-              </div>
-              <input 
-                className='playbackBar' 
-                ref={playbackBarRef}
-                type="range" 
-                defaultValue={0}
-                min={0} 
-                max={Math.floor(audioRef.current ? audioRef.current.duration : 0)} 
-                onMouseDown={() => controlsDispatch({type: "drag_playback", isPlaybackDragged: true})}
-                onMouseUp={(e) => {
-                  controlsDispatch({type: "drag_playback", isPlaybackDragged: false})
-                  audioRef.current.currentTime = e.target.value
-                }}
-                onInput={(e) => controls.playbackDragged && songDispatch({
-                  type: "update_current_time", time: getConvertedTime(e.target.value, true)
-                })}
-              />
-              {song.duration}
-            </div>
-          </div> 
-        </div>
+        <LeftControls
+          darkTheme={props.darkTheme}
+          reducer={{song, songDispatch, controls, controlsDispatch}}
+          functions={{skipCurrentSong}}
+          refs={{audioRef, playbackBarRef}}
+        />
       </div>
-      <div className={`controllerRightContainer${props.darkTheme ? ' darkThemeRightContainer' : ''}`}>
-        <div className="playModeControls">
-          <button 
-            className='shuffleBtn' 
-            title={!controls.shuffleEnabled ? 'Enable shuffle' : "Disable shuffle"}
-            onClick={() => controlsDispatch({type: "toggle_shuffle_mode"})}
-          >
-            {
-              controls.shuffleEnabled ? 
-                <Shuffle size={20} color={props.darkTheme ? 'white' : 'black'}/> :
-                <Consecutive size={20} color={props.darkTheme ? 'white' : 'black'}/>
-            }
-          </button>
-          <button 
-            title={`${controls.currentPlayMode}`}
-            onClick={() => controlsDispatch({type: "change_play_mode"})}
-          >
-            {
-              controls.currentPlayMode == "No looping" ? 
-                <PlayOnce size={20} color={props.darkTheme ? 'white' : 'black'}/> : 
-                controls.currentPlayMode == "Loop playlist" ? 
-                  <LoopPlaylist size={20} color={props.darkTheme ? 'white' : 'black'}/> : 
-                  <LoopSong size={20} color={props.darkTheme ? 'white' : 'black'}/>
-            }
-          </button>
-        </div>
-        <div className="volumeControls">
-          <button
-            onClick={() => {
-              controlsDispatch({
-                type: "set_volume", volume: audioRef.current.volume > 0 ? 0 : volumeLevelBeforeMute.current
-              })
-              audioRef.current.volume = audioRef.current.volume > 0 ? 0 : volumeLevelBeforeMute.current
-              vol.current.value = audioRef.current.volume
-            }}
-          >
-            {
-              controls.volume <= 0 ?
-               <VolumeMute size={20} color={props.darkTheme ? "white" : "black"}/> :
-               controls.volume < 1 ?
-                <VolumeSome size={20} color={props.darkTheme ? "white" : "black"}/> :
-                <VolumeFull size={20} color={props.darkTheme ? "white" : "black"}/>
-            }
-          </button>            
-          <input 
-            className='volumeAdjuster' 
-            ref={volumeAdjusterRef}
-            type="range" 
-            min={0} 
-            max={1}
-            step={0.01}
-            defaultValue={1}
-            onInput={(e) => {
-              audioRef.current.volume = e.target.value
-              volumeLevelBeforeMute.current = e.target.value
-              controlsDispatch({type: "set_volume", volume: audioRef.current.volume})
-            }}
-          />
-        </div>
-      </div>
+      <RightControls
+        darkTheme={props.darkTheme}
+        reducer={{controls, controlsDispatch}}
+        refs={{audioRef, volumeAdjusterRef, volumeLevelBeforeMute}}
+      />
     </footer>
   )
 }
