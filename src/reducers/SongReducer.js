@@ -20,6 +20,10 @@ function songReducer(state, action){
         ...state,
         duration: action.duration
       }
+    case "reset_all":
+      return {
+        ...initialSongState,
+      }
   }
   throw Error('Unknown action:', action.type) 
 }

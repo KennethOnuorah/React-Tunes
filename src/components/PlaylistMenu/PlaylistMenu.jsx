@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, createContext, useContext } from 'react'
 import { useUpdateEffect } from 'react-use'
 import { MenuContext } from '../../App'
-import { rearrangeMenuItems } from '../../utils/Rearrange'
+import { rearrangeMenuItems } from '../../utils/PlaylistMenu/Rearrange'
 
 import * as localforage from "localforage"
 
