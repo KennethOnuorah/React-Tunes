@@ -102,14 +102,13 @@ function App() {
           style: `background-color: ${!darkTheme ? "white" : "#303030"}`,
         }}
       />
-      <MenuContext.Provider
+      <MenuContext.Provider 
         value={{
-          viewPlaylist,
-          updateViewedPlaylist,
-          removeViewedPlaylist,
+          viewPlaylist, 
+          updateViewedPlaylist, 
+          removeViewedPlaylist, 
           requestedDeletionFromViewer
-        }}
-      >
+      }}>
         <PlaylistMenu darkTheme={darkTheme} toggleDarkTheme={toggleDarkTheme} />
       </MenuContext.Provider>
       <ViewerContext.Provider
@@ -129,6 +128,8 @@ function App() {
       <MusicController 
         darkTheme={darkTheme}
         startedPlaylist={startedPlaylist}
+        artistsText={artistsText}
+        details={details}
       />
     </div>
   )
