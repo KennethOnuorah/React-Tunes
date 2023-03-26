@@ -43,10 +43,10 @@ const LeftControls = ({darkTheme, reducer, functions, refs}) => {
               if(!refs.audioRef.current) return
               if(!refs.audioRef.current.paused) {
                 refs.audioRef.current.pause()
-                reducer.controlsDispatch({type: "set_paused", isPaused: true})
+                reducer.setControls({type: "set_paused", isPaused: true})
               }else{
                 refs.audioRef.current.play()
-                reducer.controlsDispatch({type: "set_paused", isPaused: false})
+                reducer.setControls({type: "set_paused", isPaused: false})
               }
             }}
           >
@@ -74,12 +74,12 @@ const LeftControls = ({darkTheme, reducer, functions, refs}) => {
             defaultValue={0}
             min={0} 
             max={Math.floor(refs.audioRef.current ? refs.audioRef.current.duration : 0)} 
-            onMouseDown={() => reducer.controlsDispatch({type: "drag_playback", isPlaybackDragged: true})}
+            onMouseDown={() => reducer.setControls({type: "drag_playback", isPlaybackDragged: true})}
             onMouseUp={(e) => {
-              reducer.controlsDispatch({type: "drag_playback", isPlaybackDragged: false})
+              reducer.setControls({type: "drag_playback", isPlaybackDragged: false})
               refs.audioRef.current.currentTime = e.target.value
             }}
-            onInput={(e) => reducer.controls.playbackDragged && songDispatch({
+            onInput={(e) => reducer.controls.playbackDragged && reducer.setSong({
               type: "update_current_time", time: getConvertedTime(e.target.value, true)
             })}
           />

@@ -1,5 +1,5 @@
 import * as localforage from 'localforage'
-import useArrayMerge from '../../general/useArrayMerge'
+import useArrayMerge from '../../general/ArrayMerge'
 import * as id3 from "id3js"
 
 async function uploadAudio(fileList, details, playlistUpdateMethod){

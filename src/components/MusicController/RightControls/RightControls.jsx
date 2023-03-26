@@ -13,7 +13,7 @@ const RightControls = ({darkTheme, reducer, refs}) => {
         <button 
           className='shuffleBtn' 
           title={!reducer.controls.shuffleEnabled ? 'Enable shuffle' : "Disable shuffle"}
-          onClick={() => reducer.controlsDispatch({type: "toggle_shuffle_mode"})}
+          onClick={() => reducer.setControls({type: "toggle_shuffle_mode"})}
         >
           {
             reducer.controls.shuffleEnabled ? 
@@ -23,7 +23,7 @@ const RightControls = ({darkTheme, reducer, refs}) => {
         </button>
         <button 
           title={`${reducer.controls.currentPlayMode}`}
-          onClick={() => reducer.controlsDispatch({type: "change_play_mode"})}
+          onClick={() => reducer.setControls({type: "change_play_mode"})}
         >
           {
             reducer.controls.currentPlayMode == "No looping" ? 
@@ -37,7 +37,7 @@ const RightControls = ({darkTheme, reducer, refs}) => {
       <div className="volumeControls">
         <button
           onClick={() => {
-            reducer.controlsDispatch({
+            reducer.setControls({
               type: "set_volume", volume: refs.audioRef.current.volume > 0 ? 0 : refs.volumeLevelBeforeMute.current
             })
             refs.audioRef.current.volume = refs.audioRef.current.volume > 0 ? 0 : refs.volumeLevelBeforeMute.current
@@ -63,7 +63,7 @@ const RightControls = ({darkTheme, reducer, refs}) => {
           onInput={(e) => {
             refs.audioRef.current.volume = e.target.value
             refs.volumeLevelBeforeMute.current = e.target.value
-            reducer.controlsDispatch({type: "set_volume", volume: refs.audioRef.current.volume})
+            reducer.setControls({type: "set_volume", volume: refs.audioRef.current.volume})
           }}
         />
       </div>
