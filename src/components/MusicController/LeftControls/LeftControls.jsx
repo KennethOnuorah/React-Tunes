@@ -1,5 +1,5 @@
 import Marquee from 'react-fast-marquee'
-import getConvertedTime from '../../../utils/getConvertedTime'
+import getConvertedTime from '../../../utils/general/getConvertedTime'
 
 import {
   BsPlayFill as Play, BsPauseFill as Pause, 

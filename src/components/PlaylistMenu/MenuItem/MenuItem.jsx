@@ -1,59 +1,68 @@
 import { useRef, useState, useContext } from 'react'
-import { MenuItemContext } from '../PlaylistMenu'
 import { MenuContext } from '../../../App'
 
+import * as localforage from 'localforage'
+
 import { AiOutlineFolder as Icon } from 'react-icons/ai'
-import { IoCheckmarkCircleOutline as ConfirmRename, IoCloseCircleOutline as CancelRename} from 'react-icons/io5'
+import { 
+  IoCheckmarkCircleOutline as ConfirmRename, 
+  IoCloseCircleOutline as CancelRename
+} from 'react-icons/io5'
 
 import './MenuItem.css'
-import * as localforage from 'localforage'
 
 const MenuItem = (props) => {
   const [playlistName, setPlaylistName] = useState(props.name)
   const [renameMode, setRenameMode] = useState(props.enableRenameMode)
-  const { viewPlaylist, updateViewedPlaylist } = useContext(MenuContext)
+  const { 
+    viewPlaylist, 
+    updateViewedPlaylist,
+    renameForStartedPlaylist,
+    setRenameForStartedPlaylist 
+  } = useContext(MenuContext)
   const newName = useRef("")
-  const oldName = useRef("")
   const itemRef = useRef()
 
-  const updatePlaylistName = async() => {
+  const updatePlaylistNameDisplay = async() => {
+    const oldName = playlistName
     if(newName.current !== ''){
-      doRename()
+      doRename(oldName)
       const keys = await localforage.keys()
-      const songNames = keys.map((k) => k.split(': ')[0].includes(oldName.current) && k.split(': ')[1]).filter((t) => typeof(t) != "boolean")
+      const songNames = keys.map((k) => k.split(': ')[0].includes(oldName) && 
+        k.split(': ')[1]).filter((t) => typeof(t) != "boolean"
+      )
       for(let i = 0; i < songNames.length; i++){
-        const b64 = await localforage.getItem(`${oldName.current}: ${songNames[i]}`)
+        const b64 = await localforage.getItem(`${oldName}: ${songNames[i]}`)
         await localforage.setItem(`${newName.current}: ${songNames[i]}`, b64)
-        localforage.removeItem(`${oldName.current}: ${songNames[i]}`)
+        localforage.removeItem(`${oldName}: ${songNames[i]}`)
       }
-      newName.current = ""
     }
   }
 
-  const doRename = () => {
+  const doRename = async(oldName) => {
     props.clearRenameRequestID()
-    oldName.current = playlistName
     setPlaylistName(props.renameDuplicate(newName.current))
-    renameDetails(oldName.current, newName.current)
-    updateViewedPlaylist({
-      name: props.renameDuplicate(newName.current)
-    }, playlistName)
-    props.replaceOldPlaylistName(oldName.current, newName.current)
-    console.log("Renaming completed for:", `"${oldName.current}"`, "\nNew name is:", `"${newName.current}"`)
+    const currentStartedPlaying = await localforage.getItem("_current_playlist_playing")
+    setRenameForStartedPlaylist(
+      (oldName === currentStartedPlaying && currentStartedPlaying !== "") ? 
+        newName.current : renameForStartedPlaylist
+    )
+    await localforage.setItem("_current_playlist_playing", 
+      (oldName === currentStartedPlaying && currentStartedPlaying !== "") ? 
+        newName.current : currentStartedPlaying
+    )
+    updatePlaylistDetails(oldName, newName.current)
+    updateViewedPlaylist({name: props.renameDuplicate(newName.current)}, playlistName)
+    props.replaceOldPlaylistName(oldName, newName.current)
+    console.log("Renaming completed for:", `"${oldName}"`, "\nNew name is:", `"${newName.current}"`)
     setRenameMode(false)
   }
 
-  const renameDetails = async(oldName, newName) => {
-    try {
-      const playlistDetails = await localforage.getItem(`_playlist_details`)
-      playlistDetails[newName] = playlistDetails[oldName]
-      delete playlistDetails[oldName]
-      await localforage.setItem(`_playlist_details`, playlistDetails)
-      console.log(`Updated /_playlist_details with renamed key: \n"${oldName}" -> "${newName}"`)
-    }
-    catch (err) {
-      console.error(err)
-    }
+  const updatePlaylistDetails = async(oldName, newName) => {
+    const playlistDetails = await localforage.getItem(`_playlist_details`)
+    playlistDetails[newName] = playlistDetails[oldName]
+    delete playlistDetails[oldName]
+    await localforage.setItem(`_playlist_details`, playlistDetails)
   }
   
   return (
@@ -100,7 +109,7 @@ const MenuItem = (props) => {
       <div className="menuItemRight">
         <button
           className='confirmRename'
-          onClick={updatePlaylistName}>
+          onClick={updatePlaylistNameDisplay}>
           <ConfirmRename 
             size={20} 
             style={{ display: renameMode ? 'flex' : 'none' }}
