@@ -1,7 +1,7 @@
 import {useRef, useState} from "react"
 
 import * as localforage from "localforage"
-import getConvertedTime from "../../../../utils/getConvertedTime"
+import getConvertedTime from "../../../../utils/general/getConvertedTime"
 
 import {BsPlayFill as Play, BsPause as Pause} from "react-icons/bs"
 import { IoTrashOutline as Delete } from "react-icons/io5"

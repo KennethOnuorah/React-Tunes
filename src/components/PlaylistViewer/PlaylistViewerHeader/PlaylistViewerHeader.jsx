@@ -1,7 +1,7 @@
 import { useEffect, useRef, useContext } from "react"
 
-import getConvertedTime from "../../../utils/getConvertedTime"
-import { uploadAudio, uploadImage } from "../../../utils/useUpload"
+import getConvertedTime from "../../../utils/general/getConvertedTime"
+import { uploadAudio, uploadImage } from "../../../utils/components/PlaylistViewerHeader/useUpload"
 import { ViewerContext } from "../../../App"
 
 import { RxUpload as UploadSong } from "react-icons/rx"

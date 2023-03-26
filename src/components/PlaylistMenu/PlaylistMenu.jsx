@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, createContext, useContext } from 'react'
 import { useUpdateEffect } from 'react-use'
 import { MenuContext } from '../../App'
-import { rearrangeMenuItems } from '../../utils/PlaylistMenu/Rearrange'
+import { rearrangeMenuItems } from '../../utils/components/PlaylistMenu/Rearrange'
 
 import * as localforage from "localforage"
 
@@ -35,13 +35,8 @@ const PlaylistMenu = (props) => {
   //Getting playlists on initialization
   useEffect(() => {
     const getPlaylists = async() => {
-      try {
-        const list = await localforage.getItem("_playlist_all")
-        setPlaylistList(list === null ? [] : [...list])
-      } 
-      catch(err) {
-        console.error(err)
-      }
+      const list = await localforage.getItem("_playlist_all")
+      setPlaylistList(!list ? [] : [...list])
     }
     getPlaylists()
   }, [])
@@ -49,13 +44,8 @@ const PlaylistMenu = (props) => {
   //Saving and updating the list of playlists.
   useUpdateEffect(() => {
     const savePlaylistList = async() => {
-      try {
-        await localforage.setItem("_playlist_all", [...playlistList])
-        console.log(`Playlist list saved (${new Date().toLocaleTimeString()})\n`, playlistList)
-      } 
-      catch (err) {
-        console.error(err)
-      }
+      await localforage.setItem("_playlist_all", [...playlistList])
+      console.log(`Playlist list saved (${new Date().toLocaleTimeString()})\n`, playlistList)
     }
     savePlaylistList()
   }, [playlistList.join("")])
@@ -66,26 +56,18 @@ const PlaylistMenu = (props) => {
   }, [requestedDeletionFromViewer])
 
   //Create store containing default information for newly created playlist
-  const createNewPlaylistDetails = (name) => {
-    const update = async() => {
-      try {
-        const currentDetails = await localforage.getItem("_playlist_details")
-        await localforage.setItem(`_playlist_details`, {
-          ...currentDetails,
-          [name]: {
-            allArtists: [],
-            allSongs: [],
-            allSongDurations: [],
-            totalLength: 0,
-            coverArt: "../src/images/default_album_cover.png",
-          }
-        })
+  const createNewPlaylistDetails = async(name) => {
+    const currentDetails = await localforage.getItem("_playlist_details")
+    await localforage.setItem(`_playlist_details`, {
+      ...currentDetails,
+      [name]: {
+        allArtists: [],
+        allSongs: [],
+        allSongDurations: [],
+        totalLength: 0,
+        coverArt: "../src/images/default_album_cover.png",
       }
-      catch (err) {
-        console.error(err)
-      }
-    }
-    update()
+    })
   }
   
   const handleSearch = (e) => {
@@ -120,7 +102,7 @@ const PlaylistMenu = (props) => {
   const replaceOldPlaylistName = (oldName, newName) => {
     let allNames = playlistList
     allNames[allNames.indexOf(oldName)] = newName
-    setPlaylistList(allNames)
+    setPlaylistList([...allNames])
   }
 
   const getDeleteRequest = (reqID) => {
@@ -131,12 +113,12 @@ const PlaylistMenu = (props) => {
 
   const deletePlaylist = async(name) => {
     setPlaylistList(playlistList.filter((n) => n != name))
-    let allPlaylists = await localforage.getItem("_playlist_all")
-    let allDetails = await localforage.getItem("_playlist_details")
-    allPlaylists = allPlaylists.filter((p) => p != name)
-    delete allDetails[name]
-    await localforage.setItem("_playlist_all", allPlaylists)
-    await localforage.setItem("_playlist_details", allDetails)
+    let playlists = await localforage.getItem("_playlist_all")
+    let playlistDetails = await localforage.getItem("_playlist_details")
+    playlists = playlists.filter((p) => p != name)
+    delete playlistDetails[name]
+    await localforage.setItem("_playlist_all", playlists)
+    await localforage.setItem("_playlist_details", playlistDetails)
     const keys = await localforage.keys()
     for(const key of keys){
       if(!key.includes(`${name}: `)) return
@@ -215,7 +197,6 @@ const PlaylistMenu = (props) => {
             name={name}
             enableRenameMode={renameRequestID === "pl_"+name ? enableRenameMode : false}
             renameDuplicate={renameDuplicate}
-            playlistList={playlistList}
             positionContextMenu={positionContextMenu}
             setDraggedPlaylist={setDraggedPlaylist}
             setDraggedPlaylistTarget={setDraggedPlaylistTarget}

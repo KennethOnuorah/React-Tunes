@@ -7,13 +7,14 @@ import * as localforage from "localforage"
 import PlaylistMenu from "./components/PlaylistMenu/PlaylistMenu"
 import PlaylistViewer from "./components/PlaylistViewer/PlaylistViewer"
 import MusicController from "./components/MusicController/MusicController"
+
 import "./App.css"
 
-const dark = await localforage.getItem("_dark_theme")
+const initialTheme = await localforage.getItem("_dark_theme")
 export const MenuContext = createContext()
 export const ViewerContext = createContext()
 function App() {
-  const [darkTheme, setDarkTheme] = useState(dark)
+  const [darkTheme, setDarkTheme] = useState(initialTheme)
   const [viewerOpen, setViewerOpen] = useState(false)
   const [details, setDetails] = useState({
     name: "-",
@@ -25,6 +26,7 @@ function App() {
   const [artistsText, setArtistsText] = useState("")
   const [requestedDeletionFromViewer, setRequestedDeletionFromViewer] = useState("")
   const [startedPlaylist, setStartedPlaylist] = useState("")
+  const [renameForStartedPlaylist, setRenameForStartedPlaylist] = useState("")
 
   const toggleDarkTheme = () => setDarkTheme(!darkTheme)
   const deleteMenuItemFromViewer = (name) => setRequestedDeletionFromViewer(name)
@@ -107,7 +109,9 @@ function App() {
           viewPlaylist, 
           updateViewedPlaylist, 
           removeViewedPlaylist, 
-          requestedDeletionFromViewer
+          requestedDeletionFromViewer,
+          setRenameForStartedPlaylist,
+          renameForStartedPlaylist
       }}>
         <PlaylistMenu darkTheme={darkTheme} toggleDarkTheme={toggleDarkTheme} />
       </MenuContext.Provider>
@@ -128,6 +132,7 @@ function App() {
       <MusicController 
         darkTheme={darkTheme}
         startedPlaylist={startedPlaylist}
+        renameForStartedPlaylist={renameForStartedPlaylist}
         artistsText={artistsText}
         details={details}
       />

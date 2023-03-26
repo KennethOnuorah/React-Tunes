@@ -1,15 +1,15 @@
-import { useRef, useReducer } from 'react'
+import { useRef, useReducer, useEffect } from 'react'
 import { useUpdateEffect } from 'react-use'
+
 import * as localforage from 'localforage'
+import { songReducer, initialSongState } from '../../reducers/SongReducer'
+import { controlsReducer, initialControlsState } from '../../reducers/ControlsReducer'
+import getConvertedTime from '../../utils/general/getConvertedTime'
+import useArrayMerge from '../../utils/general/useArrayMerge'
+import useShuffle from '../../utils/general/useShuffle'
 
 import LeftControls from './LeftControls/LeftControls'
 import RightControls from './RightControls/RightControls'
-import { songReducer, initialSongState } from '../../reducers/SongReducer'
-import { controlsReducer, initialControlsState } from '../../reducers/ControlsReducer'
-
-import getConvertedTime from '../../utils/getConvertedTime'
-import useArrayMerge from '../../utils/useArrayMerge'
-import useShuffle from '../../utils/useShuffle'
 
 import "./MusicController.css"
 
@@ -25,30 +25,35 @@ const MusicController = (props) => {
   const volumeAdjusterRef = useRef()
   const volumeLevelBeforeMute = useRef(1)
 
+  useEffect(() => {
+    const update = async() => {
+      await localforage.setItem("_current_playlist_playing", "")
+    }
+    update()
+  }, [])
+
   useUpdateEffect(() => {
     startNewQueue(props.startedPlaylist)
   }, [props.startedPlaylist])
 
-  //If the songCount changes (inc/decrease) then that means a song either was uploaded or removed
   useUpdateEffect(() => {
-    updateQueues({type: "song_count_modified"}, props.details.name)
+    updateQueues({type: "song_count_modified"})
   }, [props.details.songCount])
 
-  //Updates current playlist if it has been renamed
   useUpdateEffect(() => {
-    //Needs more work (find a way to distinguish between current playlist renaming and playlist switching)
-    //Because in both cases, the props.details.name will change
-    songDispatch({type: "set_current_playlist", playlist: props.details.name})
-  }, [props.details.name])
+    console.log("React is retarded")
+    songDispatch({type: "set_current_playlist", playlist: props.renameForStartedPlaylist})
+  }, [props.renameForStartedPlaylist])
 
-  const startNewQueue = async(playlistName) => {
+  const startNewQueue = async(playlistName, startIndex=0) => {
     if(playlistName == "") return
     console.log("STARTING PLAYLIST:", playlistName)
+    await localforage.setItem("_current_playlist_playing", playlistName) // <== IMPORTANT FOR RENAMING ISSUE
     songDispatch({type: "set_current_playlist", playlist: playlistName})
     const details = await localforage.getItem("_playlist_details")
     const ordered = useArrayMerge([details[playlistName]["allArtists"], details[playlistName]["allSongs"]], " - ")
     const shuffled = useShuffle([...ordered])
-    const firstSong = !controls.shuffleEnabled ? ordered[0] : shuffled[0]
+    const firstSong = !controls.shuffleEnabled ? ordered[startIndex] : shuffled[startIndex]
     controlsDispatch({type: "update_queues", queues: {ordered: [...ordered], shuffled: [...shuffled]}})
     songDispatch({type: "set_current_song", song: firstSong})
     controlsDispatch({type: "set_paused", isPaused: false})
@@ -59,11 +64,15 @@ const MusicController = (props) => {
     audioRef.current.play()
   }
 
-  const updateQueues = async(update, playlistName) => {
-    if(playlistName != song.currentPlaylist) return
-    console.log(playlistName, song.currentPlaylist)
+  const updateQueues = async(update) => {
+    if(props.details.name != song.currentPlaylist || song.currentPlaylist == "") return
     const details = await localforage.getItem("_playlist_details")
-    const newOrdered = useArrayMerge([details[playlistName]["allArtists"], details[playlistName]["allSongs"]], " - ")
+    const newOrdered = useArrayMerge([
+      details[song.currentPlaylist]["allArtists"], 
+      details[song.currentPlaylist]["allSongs"]
+    ], 
+    " - "
+    )
     switch (update.type) {
       case "song_count_modified":
         const addedSongs = newOrdered.filter((s) => !controls.queues.ordered.includes(s))
@@ -87,7 +96,7 @@ const MusicController = (props) => {
   const handleQueueEnd = async() => {
     if(controls.currentPlayMode == "Loop playlist"){
       const reshuffled = useShuffle([...controls.queues.ordered])
-      const firstSong = controls.shuffleEnabled ? reshuffled[0] : queues.ordered[0]
+      const firstSong = controls.shuffleEnabled ? reshuffled[0] : controls.queues.ordered[0]
       controlsDispatch({type: "update_queues", queues: {...controls.queues, shuffled: [...reshuffled]}})
       songDispatch({type: "set_current_song", song: firstSong})
       audioRef.current.src = await localforage.getItem(`${song.currentPlaylist}: ${firstSong}`)
