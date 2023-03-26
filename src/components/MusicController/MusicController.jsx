@@ -1,12 +1,13 @@
 import { useRef, useReducer, useEffect } from 'react'
 import { useUpdateEffect } from 'react-use'
-
 import * as localforage from 'localforage'
+
 import { songReducer, initialSongState } from '../../reducers/SongReducer'
 import { controlsReducer, initialControlsState } from '../../reducers/ControlsReducer'
+
 import getConvertedTime from '../../utils/general/getConvertedTime'
-import useArrayMerge from '../../utils/general/useArrayMerge'
-import useShuffle from '../../utils/general/useShuffle'
+import useArrayMerge from '../../utils/general/ArrayMerge'
+import useShuffle from '../../utils/general/Shuffle'
 
 import LeftControls from './LeftControls/LeftControls'
 import RightControls from './RightControls/RightControls'
@@ -14,8 +15,8 @@ import RightControls from './RightControls/RightControls'
 import "./MusicController.css"
 
 const MusicController = (props) => {
-  const [song, songDispatch] = useReducer(songReducer, initialSongState)
-  const [controls, controlsDispatch] = useReducer(controlsReducer, initialControlsState)
+  const [song, setSong] = useReducer(songReducer, initialSongState)
+  const [controls, setControls] = useReducer(controlsReducer, initialControlsState)
   const onLastSong = controls.shuffleEnabled ? 
     controls.queues.shuffled.indexOf(song.currentSong) == controls.queues.shuffled.length - 1 :
     controls.queues.ordered.indexOf(song.currentSong) == controls.queues.ordered.length - 1
@@ -33,7 +34,7 @@ const MusicController = (props) => {
   }, [])
 
   useUpdateEffect(() => {
-    startNewQueue(props.startedPlaylist)
+    createNewQueues(props.startedPlaylist)
   }, [props.startedPlaylist])
 
   useUpdateEffect(() => {
@@ -41,22 +42,27 @@ const MusicController = (props) => {
   }, [props.details.songCount])
 
   useUpdateEffect(() => {
-    console.log("React is retarded")
-    songDispatch({type: "set_current_playlist", playlist: props.renameForStartedPlaylist})
+    setSong({type: "set_current_playlist", playlist: props.renameForStartedPlaylist})
   }, [props.renameForStartedPlaylist])
 
-  const startNewQueue = async(playlistName, startIndex=0) => {
+  useUpdateEffect(() => {
+    playNextSongByChoice(props.chosenSong)
+  }, [props.chosenSong])
+
+  const createNewQueues = async(playlistName, songChoice="") => {
     if(playlistName == "") return
     console.log("STARTING PLAYLIST:", playlistName)
     await localforage.setItem("_current_playlist_playing", playlistName) // <== IMPORTANT FOR RENAMING ISSUE
-    songDispatch({type: "set_current_playlist", playlist: playlistName})
+    setSong({type: "set_current_playlist", playlist: playlistName})
     const details = await localforage.getItem("_playlist_details")
     const ordered = useArrayMerge([details[playlistName]["allArtists"], details[playlistName]["allSongs"]], " - ")
     const shuffled = useShuffle([...ordered])
-    const firstSong = !controls.shuffleEnabled ? ordered[startIndex] : shuffled[startIndex]
-    controlsDispatch({type: "update_queues", queues: {ordered: [...ordered], shuffled: [...shuffled]}})
-    songDispatch({type: "set_current_song", song: firstSong})
-    controlsDispatch({type: "set_paused", isPaused: false})
+    const firstSong = !controls.shuffleEnabled ? 
+      ordered[songChoice == "" ? 0 : ordered.indexOf(songChoice)] : 
+      shuffled[songChoice == "" ? 0 : shuffled.indexOf(songChoice)]
+    setSong({type: "set_current_song", song: firstSong})
+    setControls({type: "update_queues", queues: {ordered: [...ordered], shuffled: [...shuffled]}})
+    setControls({type: "set_paused", isPaused: false})
     currentPlaylistCoverRef.current = details[playlistName]["coverArt"]
     audioRef.current.src = await localforage.getItem(`${playlistName}: ${firstSong}`)
     document.title = firstSong
@@ -67,23 +73,18 @@ const MusicController = (props) => {
   const updateQueues = async(update) => {
     if(props.details.name != song.currentPlaylist || song.currentPlaylist == "") return
     const details = await localforage.getItem("_playlist_details")
-    const newOrdered = useArrayMerge([
-      details[song.currentPlaylist]["allArtists"], 
-      details[song.currentPlaylist]["allSongs"]
-    ], 
-    " - "
-    )
+    const newOrdered = useArrayMerge([details[song.currentPlaylist]["allArtists"], details[song.currentPlaylist]["allSongs"]], " - ")
     switch (update.type) {
       case "song_count_modified":
         const addedSongs = newOrdered.filter((s) => !controls.queues.ordered.includes(s))
         const newShuffled = [...controls.queues.shuffled, ...addedSongs]
-        controlsDispatch({type: "update_queues", queues: {
+        setControls({type: "update_queues", queues: {
           ordered: [...newOrdered], 
           shuffled: [...newShuffled]
         }})
         break
       case "change_order":
-        controlsDispatch({type: "update_queues", queues: {
+        setControls({type: "update_queues", queues: {
           ...controls.queues,
           ordered: [...newOrdered]
         }})
@@ -97,8 +98,8 @@ const MusicController = (props) => {
     if(controls.currentPlayMode == "Loop playlist"){
       const reshuffled = useShuffle([...controls.queues.ordered])
       const firstSong = controls.shuffleEnabled ? reshuffled[0] : controls.queues.ordered[0]
-      controlsDispatch({type: "update_queues", queues: {...controls.queues, shuffled: [...reshuffled]}})
-      songDispatch({type: "set_current_song", song: firstSong})
+      setControls({type: "update_queues", queues: {...controls.queues, shuffled: [...reshuffled]}})
+      setSong({type: "set_current_song", song: firstSong})
       audioRef.current.src = await localforage.getItem(`${song.currentPlaylist}: ${firstSong}`)
       audioRef.current.currentTime = 0
       document.title = firstSong
@@ -106,7 +107,7 @@ const MusicController = (props) => {
       audioRef.current.play()
     }else{
       audioRef.current.pause()
-      controlsDispatch({type: "set_paused", isPaused: true})
+      setControls({type: "set_paused", isPaused: true})
     }
   }
 
@@ -124,21 +125,35 @@ const MusicController = (props) => {
       handleQueueEnd()
       return
     }
-    const newSong = !controls.shuffleEnabled ? 
-      controls.queues.ordered[playDirection.toLowerCase() == "right" ? 
-        controls.queues.ordered.indexOf(song.currentSong) + 1 : controls.queues.ordered.indexOf(song.currentSong) - 1] :
+    const newSong = controls.shuffleEnabled ? 
       controls.queues.shuffled[playDirection.toLowerCase() == "right" ? 
-        controls.queues.shuffled.indexOf(song.currentSong) + 1 : controls.queues.shuffled.indexOf(song.currentSong) - 1]
-    songDispatch({type: "set_current_song", song: newSong})
+        controls.queues.shuffled.indexOf(song.currentSong) + 1 : controls.queues.shuffled.indexOf(song.currentSong) - 1] :
+      controls.queues.ordered[playDirection.toLowerCase() == "right" ? 
+        controls.queues.ordered.indexOf(song.currentSong) + 1 : controls.queues.ordered.indexOf(song.currentSong) - 1]
+    setSong({type: "set_current_song", song: newSong})
     audioRef.current.src = await localforage.getItem(`${song.currentPlaylist}: ${newSong}`)
     document.title = newSong
     console.log(`Now playing ${playDirection ? "next" : "previous"} song:`, newSong)
-    controlsDispatch({type: "set_paused", isPaused: false})
+    setControls({type: "set_paused", isPaused: false})
     audioRef.current.play()
   }
 
-  const playNextSongByChoice = async(songName) => {
-
+  const playNextSongByChoice = async(songChoice) => {
+    const playlist = songChoice.split(": ")[0]
+    songChoice = songChoice.split(": ")[1]
+    if(playlist === song.currentPlaylist){
+      const newSong = controls.shuffleEnabled ? 
+        controls.queues.shuffled[controls.queues.shuffled.indexOf(songChoice)] : 
+        controls.queues.ordered[controls.queues.ordered.indexOf(songChoice)]
+      setSong({type: "set_current_song", song: newSong})
+      audioRef.current.src = await localforage.getItem(`${song.currentPlaylist}: ${songChoice}`)
+      document.title = newSong
+      console.log(`Now playing song:`, newSong)
+      setControls({type: "set_paused", isPaused: false})
+      audioRef.current.play()
+    }else{
+      createNewQueues(playlist, songChoice)
+    }
   }
 
   const skipCurrentSong = (skipDirection="right") => {
@@ -149,7 +164,7 @@ const MusicController = (props) => {
         break
       case "left":
         if(audioRef.current.currentTime > 3 
-          || controls.queues.ordered.indexOf(song.currentSong) == 0
+          || controls.queues.ordered.indexOf(song.currentSong) == 0 
           || controls.queues.shuffled.indexOf(song.currentSong) == 0){
           audioRef.current.currentTime = 0
         }else{
@@ -166,16 +181,10 @@ const MusicController = (props) => {
     <footer className={`musicController${props.darkTheme ? ' darkThemeMusicController' : ''}`}>
       <audio 
         ref={audioRef}
-        onLoadedMetadata={(e) => songDispatch({
-          type: "set_duration", duration: getConvertedTime(e.target.duration, true)
-        })}
+        onLoadedMetadata={(e) => setSong({type: "set_duration", duration: getConvertedTime(e.target.duration, true)})}
         onTimeUpdate={() => {
-          playbackBarRef.current.value = !controls.playbackDragged ? 
-            audioRef.current.currentTime : 
-            playbackBarRef.current.value
-          !controls.playbackDragged && songDispatch({
-            type: "update_current_time", time: getConvertedTime(audioRef.current.currentTime, true)
-          })
+          playbackBarRef.current.value = !controls.playbackDragged ? audioRef.current.currentTime : playbackBarRef.current.value
+          !controls.playbackDragged && setSong({type: "update_current_time", time: getConvertedTime(audioRef.current.currentTime, true)})
         }}
         onEnded={onSongEnded}
       />
@@ -187,14 +196,14 @@ const MusicController = (props) => {
         />
         <LeftControls
           darkTheme={props.darkTheme}
-          reducer={{song, songDispatch, controls, controlsDispatch}}
+          reducer={{song, setSong, controls, setControls}}
           functions={{skipCurrentSong}}
           refs={{audioRef, playbackBarRef}}
         />
       </div>
       <RightControls
         darkTheme={props.darkTheme}
-        reducer={{controls, controlsDispatch}}
+        reducer={{controls, setControls}}
         refs={{audioRef, volumeAdjusterRef, volumeLevelBeforeMute}}
       />
     </footer>

@@ -27,10 +27,12 @@ function App() {
   const [requestedDeletionFromViewer, setRequestedDeletionFromViewer] = useState("")
   const [startedPlaylist, setStartedPlaylist] = useState("")
   const [renameForStartedPlaylist, setRenameForStartedPlaylist] = useState("")
+  const [chosenSong, setChosenSong] = useState("")
 
   const toggleDarkTheme = () => setDarkTheme(!darkTheme)
   const deleteMenuItemFromViewer = (name) => setRequestedDeletionFromViewer(name)
   const startNewPlaylist = (name) => setStartedPlaylist(name)
+  const selectSong = (name) => setChosenSong(name)
 
   const viewPlaylist = (name, artists, songCount, length, src) => {
     setViewerOpen(true)
@@ -122,7 +124,8 @@ function App() {
           artistsText,
           deleteMenuItemFromViewer,
           details,
-          startNewPlaylist
+          startNewPlaylist,
+          selectSong
         }}
       >
         {viewerOpen && (
@@ -135,6 +138,7 @@ function App() {
         renameForStartedPlaylist={renameForStartedPlaylist}
         artistsText={artistsText}
         details={details}
+        chosenSong={chosenSong}
       />
     </div>
   )

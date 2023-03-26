@@ -1,14 +1,14 @@
-import {useRef, useState} from "react"
+import { useState } from "react"
 
-import * as localforage from "localforage"
 import getConvertedTime from "../../../../utils/general/getConvertedTime"
 
-import {BsPlayFill as Play, BsPause as Pause} from "react-icons/bs"
+import {BsPlayFill as Play} from "react-icons/bs"
 import { IoTrashOutline as Delete } from "react-icons/io5"
 import "./Song.css"
 
+
 const Song = (props) => {
-  const songName = useRef(`${props.songArtist} - ${props.songName}`)
+  const base64Key = `${props.playlistName}: ${props.songArtist} - ${props.songName}`
   const [draggedOver, setDraggedOver] = useState(false)
 
   return (
@@ -39,6 +39,7 @@ const Song = (props) => {
       >
         <button 
           className="playBtn" 
+          onClick={() => props.selectSong(base64Key)}
           style={{
             color: props.darkTheme ? "white" : "black"
           }}
@@ -60,11 +61,11 @@ const Song = (props) => {
         <button
           className="removeSongBtn"
           onClick={async() => {
-            if(!confirm(`"${songName.current}" will be deleted from playlist "${props.playlistName}." Press OK to confirm deletion.`)) return
+            if(!confirm(`"${base64Key}" will be deleted from "${props.playlistName}." Press OK to confirm.`)) return
             props.deleteSong(
               props.playlistName, 
               {name: props.songName, artist: props.songArtist, duration: props.songDuration},
-              `${props.playlistName}: ${songName.current}`
+              base64Key
             )
           }}
           style={{
