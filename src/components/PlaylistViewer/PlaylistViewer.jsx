@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { HiOutlineClock as Time } from "react-icons/hi"
 
 import PlaylistViewerHeader from "./PlaylistViewerHeader/PlaylistViewerHeader"
@@ -7,21 +7,6 @@ import "./PlaylistViewer.css"
 
 const PlaylistViewer = (props) => {
   const [viewedDetails, setViewedDetails] = useState({})
-  const labelsRef = useRef()
-  const hrRef = useRef()
-
-  useEffect(() => {
-    const updateColorTheme = () => {
-      if (props.darkTheme) {
-        labelsRef.current.classList.add("darkThemeBorderLabels")
-        hrRef.current.classList.add("darkThemeBorderHR")
-        return
-      }
-      labelsRef.current.classList.remove("darkThemeBorderLabels")
-      hrRef.current.classList.remove("darkThemeBorderHR")
-    }
-    updateColorTheme()
-  }, [props.darkTheme])
 
   useEffect(() => {
     setViewedDetails({...props.details})
@@ -31,14 +16,13 @@ const PlaylistViewer = (props) => {
     <section className="playlistViewerContainer">
       <PlaylistViewerHeader darkTheme={props.darkTheme} details={viewedDetails}/>
       <div className="viewerBodyBorder">
-        <div className="borderLabels" ref={labelsRef}>
+        <div className={`borderLabels${props.darkTheme ? " darkThemeBorderLabels" : ""}`}>
           <div className="leftLabels">Title & Artist</div>
           <Time/>
         </div>
       </div>
       <hr
-        className="borderHR"
-        ref={hrRef}
+        className={`borderHR${props.darkTheme ? " darkThemeBorderHR" : ""}`}
         style={{
           marginTop: "15px",
         }}

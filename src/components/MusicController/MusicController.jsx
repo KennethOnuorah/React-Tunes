@@ -49,10 +49,14 @@ const MusicController = (props) => {
     playNextSongByChoice(props.chosenSong)
   }, [props.chosenSong])
 
+  useUpdateEffect(() => {
+    props.deletedSong == song.currentSong && skipCurrentSong()
+  }, [props.deletedSong])
+
   const createNewQueues = async(playlistName, songChoice="") => {
     if(playlistName == "") return
     console.log("STARTING PLAYLIST:", playlistName)
-    await localforage.setItem("_current_playlist_playing", playlistName) // <== IMPORTANT FOR RENAMING ISSUE
+    await localforage.setItem("_current_playlist_playing", playlistName)
     setSong({type: "set_current_playlist", playlist: playlistName})
     const details = await localforage.getItem("_playlist_details")
     const ordered = useArrayMerge([details[playlistName]["allArtists"], details[playlistName]["allSongs"]], " - ")
@@ -76,8 +80,9 @@ const MusicController = (props) => {
     const newOrdered = useArrayMerge([details[song.currentPlaylist]["allArtists"], details[song.currentPlaylist]["allSongs"]], " - ")
     switch (update.type) {
       case "song_count_modified":
-        const addedSongs = newOrdered.filter((s) => !controls.queues.ordered.includes(s))
-        const newShuffled = [...controls.queues.shuffled, ...addedSongs]
+        const newShuffled = newOrdered.length <= controls.queues.shuffled.length ?
+          controls.queues.shuffled.filter((s) => newOrdered.includes(s)) :
+          [...controls.queues.shuffled, ...newOrdered.filter((s) => !controls.queues.shuffled.includes(s))]
         setControls({type: "update_queues", queues: {
           ordered: [...newOrdered], 
           shuffled: [...newShuffled]

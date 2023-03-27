@@ -107,6 +107,7 @@ const PlaylistMenu = (props) => {
 
   const getDeleteRequest = (reqID) => {
     const name = reqID.split('_')[1]
+    if(!confirm(`Playlist "${name}" will be deleted. Press OK to proceed.`)) return
     deletePlaylist(name)
     removeViewedPlaylist(name)
   }
