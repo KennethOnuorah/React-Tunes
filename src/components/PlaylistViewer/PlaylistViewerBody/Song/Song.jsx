@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { ViewerContext } from "../../../../App"
 
 import getConvertedTime from "../../../../utils/general/getConvertedTime"
 
@@ -10,7 +11,7 @@ import "./Song.css"
 const Song = (props) => {
   const base64Key = `${props.playlistName}: ${props.songArtist} - ${props.songName}`
   const [draggedOver, setDraggedOver] = useState(false)
-
+  const { updateDeletedSong } = useContext(ViewerContext)
   return (
     <section
       className="song"
@@ -62,6 +63,7 @@ const Song = (props) => {
           className="removeSongBtn"
           onClick={async() => {
             if(!confirm(`"${base64Key}" will be deleted from "${props.playlistName}." Press OK to confirm.`)) return
+            updateDeletedSong(base64Key.split(": ")[1])
             props.deleteSong(
               props.playlistName, 
               {name: props.songName, artist: props.songArtist, duration: props.songDuration},

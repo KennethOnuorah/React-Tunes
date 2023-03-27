@@ -13,8 +13,7 @@ const PlaylistViewerBody = (props) => {
   
   const draggedSong = useRef("")
   const draggedSongTarget = useRef("")
-  const { 
-    updateViewedPlaylist, selectSong} = useContext(ViewerContext)
+  const { updateViewedPlaylist, selectSong} = useContext(ViewerContext)
 
   useEffect(() => {
     const update = async() => {
@@ -24,7 +23,7 @@ const PlaylistViewerBody = (props) => {
       setDurations(details[props.details.name]["allSongDurations"])
     }
     update()
-  }, [props.details.songCount, rearrangementCount])
+  }, [props.details.name, props.details.songCount, rearrangementCount])
 
   const setDraggedSong = (name) => draggedSong.current = name
   const setDraggedSongTarget = (name) => draggedSongTarget.current = name

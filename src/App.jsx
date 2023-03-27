@@ -28,11 +28,13 @@ function App() {
   const [startedPlaylist, setStartedPlaylist] = useState("")
   const [renameForStartedPlaylist, setRenameForStartedPlaylist] = useState("")
   const [chosenSong, setChosenSong] = useState("")
+  const [deletedSong, setDeletedSong] = useState("")
 
   const toggleDarkTheme = () => setDarkTheme(!darkTheme)
   const deleteMenuItemFromViewer = (name) => setRequestedDeletionFromViewer(name)
   const startNewPlaylist = (name) => setStartedPlaylist(name)
   const selectSong = (name) => setChosenSong(name)
+  const updateDeletedSong = (name) => setDeletedSong(name)
 
   const viewPlaylist = (name, artists, songCount, length, src) => {
     setViewerOpen(true)
@@ -68,14 +70,6 @@ function App() {
     })
     setViewerOpen(false)
   }
-
-  useEffect(() => {
-    const setTheme = async () => {
-      const theme = await localforage.getItem("_dark_theme")
-      setDarkTheme(theme === null ? false : theme)
-    }
-    setTheme()
-  }, [])
 
   useEffect(() => {
     const uniqueList = Array.from(new Set(details.artists))
@@ -125,7 +119,8 @@ function App() {
           deleteMenuItemFromViewer,
           details,
           startNewPlaylist,
-          selectSong
+          selectSong,
+          updateDeletedSong
         }}
       >
         {viewerOpen && (
@@ -139,6 +134,7 @@ function App() {
         artistsText={artistsText}
         details={details}
         chosenSong={chosenSong}
+        deletedSong={deletedSong}
       />
     </div>
   )
