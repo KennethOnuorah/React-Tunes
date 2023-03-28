@@ -35,6 +35,10 @@ function controlsReducer(state, action){
         ...state,
         volume: action.volume
       }
+    case "reset_all":
+      return {
+        ...initialControlsState
+      }
   }
   throw Error('Unknown action:', action.type);
 }

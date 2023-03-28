@@ -11,51 +11,29 @@ import { BsPlayFill as Play } from "react-icons/bs"
 import "./PlaylistViewerHeader.css"
 
 const PlaylistViewerHeader = (props) => {
-  const headerRef = useRef()
-  const playlistTitleRef = useRef()
-  const playlistInfoRef = useRef()
-  const playlistCoverRef = useRef()
   const fileUploadBtnRef = useRef()
   const songUploadBtnRef = useRef()
   const { 
     updateViewedPlaylist, 
     removeViewedPlaylist, 
     artistsText, 
-    deleteMenuItemFromViewer, 
+    updateDeletedPlaylist, 
     startNewPlaylist } = useContext(ViewerContext)
-
-  useEffect(() => {
-    const updateColorTheme = () => {
-      if (props.darkTheme) {
-        headerRef.current.classList.add("darkModeHeader")
-        playlistTitleRef.current.classList.add("darkModeText")
-        playlistInfoRef.current.classList.add("darkModeText")
-        playlistCoverRef.current.classList.add("darkModePlaylistCover")
-        return
-      }
-      headerRef.current.classList.remove("darkModeHeader")
-      playlistTitleRef.current.classList.remove("darkModeText")
-      playlistInfoRef.current.classList.remove("darkModeText")
-      playlistCoverRef.current.classList.remove("darkModePlaylistCover")
-    }
-    updateColorTheme()
-  }, [props.darkTheme])
 
   const handleButtonClick = (ref) => ref.current.click()
 
   const deletePlaylist = () => {
     if(!confirm(`Playlist "${props.details.name}" will be deleted. Press OK to proceed.`)) return
     removeViewedPlaylist(props.details.name)
-    deleteMenuItemFromViewer(props.details.name)
+    updateDeletedPlaylist(props.details.name)
   }
   
   return (
-    <header className="playlistViewerHeader" ref={headerRef}>
+    <header className={`playlistViewerHeader${props.darkTheme ? " darkModeHeader" : ""}`}>
       <div className="headerInnerContainer">
         <div className="playlistCoverSection">
           <img
-            className="playlistCover"
-            ref={playlistCoverRef}
+            className={`playlistCover${props.darkTheme ? " darkModePlaylistCover" : ""}`}
             src={props.details.artSrc}
             alt="Playlist cover art"
             height={150}
@@ -64,10 +42,10 @@ const PlaylistViewerHeader = (props) => {
           />
         </div>
         <div className="playlistAboutSection">
-          <div className="playlistTitle" ref={playlistTitleRef}>
+          <div className={`playlistTitle${props.darkTheme ? " darkModeText" : ""}`}>
             {props.details.name === "" ? "-" : props.details.name}
           </div>
-          <div className="playlistInfo" ref={playlistInfoRef}>
+          <div className={`playlistInfo${props.darkTheme ? " darkModeText" : ""}`}>
             {artistsText}
             <br/>
             {props.details.songCount} Song{props.details.songCount === 1 ? "" : 's'}

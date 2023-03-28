@@ -13,7 +13,7 @@ const PlaylistViewerBody = (props) => {
   
   const draggedSong = useRef("")
   const draggedSongTarget = useRef("")
-  const { updateViewedPlaylist, selectSong} = useContext(ViewerContext)
+  const { updateViewedPlaylist, selectSong, updateRearrangementCount } = useContext(ViewerContext)
 
   useEffect(() => {
     const update = async() => {
@@ -57,6 +57,7 @@ const PlaylistViewerBody = (props) => {
       details[props.details.name]["allSongDurations"] = durationList
       await localforage.setItem("_playlist_details", details)
       setRearrangementCount(rearrangementCount + 1)
+      updateRearrangementCount()
       updateViewedPlaylist({
         artists: artistList
       }, props.details.name)

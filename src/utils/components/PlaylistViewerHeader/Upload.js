@@ -33,7 +33,7 @@ async function uploadAudio(fileList, details, playlistUpdateMethod){
       playlistDetails[details.name]["allArtists"].push(tags.artist)
       playlistDetails[details.name]["allSongs"].push(tags.title)
     }else{
-      alert(`"${tags.artist} - ${tags.title}" is already in your playlist!`)
+      alert(`"${tags.artist} - ${tags.title}" is already in this playlist!`)
     }
   }
   await localforage.setItem(`_playlist_details`, playlistDetails)
