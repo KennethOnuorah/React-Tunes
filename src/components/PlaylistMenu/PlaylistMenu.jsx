@@ -25,14 +25,13 @@ const PlaylistMenu = (props) => {
   const [renameRequestID, setRenameRequestID] = useState("")
   const [searchEntry, setSearchEntry] = useState("")
 
-  const { removeViewedPlaylist, requestedDeletionFromViewer } = useContext(MenuContext)
+  const { removeViewedPlaylist, deletedPlaylist, updateDeletedPlaylist } = useContext(MenuContext)
 
   const draggedPlaylist = useRef("") 
   const draggedPlaylistTarget = useRef("")
   const contextMenuRef = useRef()
   const contextTargetRef = useRef("")
 
-  //Getting playlists on initialization
   useEffect(() => {
     const getPlaylists = async() => {
       const list = await localforage.getItem("_playlist_all")
@@ -41,7 +40,6 @@ const PlaylistMenu = (props) => {
     getPlaylists()
   }, [])
 
-  //Saving and updating the list of playlists.
   useUpdateEffect(() => {
     const savePlaylistList = async() => {
       await localforage.setItem("_playlist_all", [...playlistList])
@@ -50,12 +48,10 @@ const PlaylistMenu = (props) => {
     savePlaylistList()
   }, [playlistList.join("")])
 
-  //Deleting a specific playlist from the viewer
   useUpdateEffect(() => {
-    deletePlaylist(requestedDeletionFromViewer)
-  }, [requestedDeletionFromViewer])
+    deletePlaylist(deletedPlaylist)
+  }, [deletedPlaylist])
 
-  //Create store containing default information for newly created playlist
   const createNewPlaylistDetails = async(name) => {
     const currentDetails = await localforage.getItem("_playlist_details")
     await localforage.setItem(`_playlist_details`, {
@@ -114,6 +110,7 @@ const PlaylistMenu = (props) => {
 
   const deletePlaylist = async(name) => {
     setPlaylistList(playlistList.filter((n) => n != name))
+    updateDeletedPlaylist(name)
     let playlists = await localforage.getItem("_playlist_all")
     let playlistDetails = await localforage.getItem("_playlist_details")
     playlists = playlists.filter((p) => p != name)

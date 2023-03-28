@@ -27,10 +27,8 @@ const MusicController = (props) => {
   const volumeLevelBeforeMute = useRef(1)
 
   useEffect(() => {
-    const update = async() => {
-      await localforage.setItem("_current_playlist_playing", "")
-    }
-    update()
+    const saveCurrentPlaylist = async() => await localforage.setItem("_current_playlist_playing", "")
+    saveCurrentPlaylist()
   }, [])
 
   useUpdateEffect(() => {
@@ -38,8 +36,12 @@ const MusicController = (props) => {
   }, [props.startedPlaylist])
 
   useUpdateEffect(() => {
-    updateQueues({type: "song_count_modified"})
+    updateQueues({type: "queues_modified"})
   }, [props.details.songCount])
+
+  useUpdateEffect(() => {
+    updateQueues({type: "change_order"})
+  }, [props.rearrangementCount])
 
   useUpdateEffect(() => {
     setSong({type: "set_current_playlist", playlist: props.renameForStartedPlaylist})
@@ -52,6 +54,16 @@ const MusicController = (props) => {
   useUpdateEffect(() => {
     props.deletedSong == song.currentSong && skipCurrentSong()
   }, [props.deletedSong])
+
+  useUpdateEffect(() => {
+    if(props.deletedPlaylist == song.currentPlaylist){
+      setSong({type: "reset_all"})
+      setControls({"type": "reset_all"})
+      document.title = "Tunes"
+      audioRef.current.src = ""
+      currentPlaylistCoverRef.current = "../src/images/default_album_cover.png"
+    }
+  }, [props.deletedPlaylist])
 
   const createNewQueues = async(playlistName, songChoice="") => {
     if(playlistName == "") return
@@ -79,7 +91,7 @@ const MusicController = (props) => {
     const details = await localforage.getItem("_playlist_details")
     const newOrdered = useArrayMerge([details[song.currentPlaylist]["allArtists"], details[song.currentPlaylist]["allSongs"]], " - ")
     switch (update.type) {
-      case "song_count_modified":
+      case "queues_modified":
         const newShuffled = newOrdered.length <= controls.queues.shuffled.length ?
           controls.queues.shuffled.filter((s) => newOrdered.includes(s)) :
           [...controls.queues.shuffled, ...newOrdered.filter((s) => !controls.queues.shuffled.includes(s))]
@@ -147,9 +159,7 @@ const MusicController = (props) => {
     const playlist = songChoice.split(": ")[0]
     songChoice = songChoice.split(": ")[1]
     if(playlist === song.currentPlaylist){
-      const newSong = controls.shuffleEnabled ? 
-        controls.queues.shuffled[controls.queues.shuffled.indexOf(songChoice)] : 
-        controls.queues.ordered[controls.queues.ordered.indexOf(songChoice)]
+      const newSong = controls.shuffleEnabled ? controls.queues.shuffled[controls.queues.shuffled.indexOf(songChoice)] : controls.queues.ordered[controls.queues.ordered.indexOf(songChoice)]
       setSong({type: "set_current_song", song: newSong})
       audioRef.current.src = await localforage.getItem(`${song.currentPlaylist}: ${songChoice}`)
       document.title = newSong
@@ -168,16 +178,14 @@ const MusicController = (props) => {
         playNextSong(skipDirection)
         break
       case "left":
-        if(audioRef.current.currentTime > 3 
-          || controls.queues.ordered.indexOf(song.currentSong) == 0 
-          || controls.queues.shuffled.indexOf(song.currentSong) == 0){
+        if(audioRef.current.currentTime > 3 || controls.queues.ordered.indexOf(song.currentSong) == 0 || controls.queues.shuffled.indexOf(song.currentSong) == 0){
           audioRef.current.currentTime = 0
         }else{
           playNextSong(skipDirection)
         }
         break
       default:
-        console.log(`"${skipDirection}" is not a valid skip direction.`)
+        console.warn(`"${skipDirection}" is not a valid skip direction.`)
         break
     }
   }

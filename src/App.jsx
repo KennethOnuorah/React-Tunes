@@ -24,17 +24,19 @@ function App() {
     artSrc: "",
   })
   const [artistsText, setArtistsText] = useState("")
-  const [requestedDeletionFromViewer, setRequestedDeletionFromViewer] = useState("")
   const [startedPlaylist, setStartedPlaylist] = useState("")
   const [renameForStartedPlaylist, setRenameForStartedPlaylist] = useState("")
   const [chosenSong, setChosenSong] = useState("")
   const [deletedSong, setDeletedSong] = useState("")
+  const [deletedPlaylist, setDeletedPlaylist] = useState("")
+  const [rearrangementCount, setRearrangementCount] = useState(0)
 
   const toggleDarkTheme = () => setDarkTheme(!darkTheme)
-  const deleteMenuItemFromViewer = (name) => setRequestedDeletionFromViewer(name)
   const startNewPlaylist = (name) => setStartedPlaylist(name)
   const selectSong = (name) => setChosenSong(name)
   const updateDeletedSong = (name) => setDeletedSong(name)
+  const updateDeletedPlaylist = (name) => setDeletedPlaylist(name)
+  const updateRearrangementCount = () => setRearrangementCount(rearrangementCount + 1)
 
   const viewPlaylist = (name, artists, songCount, length, src) => {
     setViewerOpen(true)
@@ -104,10 +106,11 @@ function App() {
         value={{
           viewPlaylist, 
           updateViewedPlaylist, 
-          removeViewedPlaylist, 
-          requestedDeletionFromViewer,
+          removeViewedPlaylist,
+          updateDeletedPlaylist,
+          deletedPlaylist,
           setRenameForStartedPlaylist,
-          renameForStartedPlaylist
+          renameForStartedPlaylist,
       }}>
         <PlaylistMenu darkTheme={darkTheme} toggleDarkTheme={toggleDarkTheme} />
       </MenuContext.Provider>
@@ -116,11 +119,12 @@ function App() {
           updateViewedPlaylist, 
           removeViewedPlaylist,
           artistsText,
-          deleteMenuItemFromViewer,
+          updateDeletedPlaylist,
           details,
           startNewPlaylist,
           selectSong,
-          updateDeletedSong
+          updateDeletedSong,
+          updateRearrangementCount
         }}
       >
         {viewerOpen && (
@@ -135,6 +139,8 @@ function App() {
         details={details}
         chosenSong={chosenSong}
         deletedSong={deletedSong}
+        deletedPlaylist={deletedPlaylist}
+        rearrangementCount={rearrangementCount}
       />
     </div>
   )

@@ -7,7 +7,6 @@ import {BsPlayFill as Play} from "react-icons/bs"
 import { IoTrashOutline as Delete } from "react-icons/io5"
 import "./Song.css"
 
-
 const Song = (props) => {
   const base64Key = `${props.playlistName}: ${props.songArtist} - ${props.songName}`
   const [draggedOver, setDraggedOver] = useState(false)
@@ -16,7 +15,9 @@ const Song = (props) => {
     <section
       className="song"
       onDragStart={() => props.setDraggedSong(props.songName)}
-      onDragEnd={() => props.rearrangeSongs()}
+      onDragEnd={() => {
+        props.rearrangeSongs()
+      }}
       onDragOver={(e) => {
         e.preventDefault()
         setDraggedOver(true)
