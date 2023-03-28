@@ -3,17 +3,19 @@ import { MenuContext } from '../../../App'
 
 import * as localforage from 'localforage'
 
-import { AiOutlineFolder as Icon } from 'react-icons/ai'
+import { AiOutlineFolder as ItemIcon } from 'react-icons/ai'
+import { FaRegEdit as Edit } from 'react-icons/fa'
 import { 
   IoCheckmarkCircleOutline as ConfirmRename, 
-  IoCloseCircleOutline as CancelRename
+  IoCloseCircleOutline as CancelRename,
+  IoTrashOutline as Trash,
 } from 'react-icons/io5'
 
 import './MenuItem.css'
 
 const MenuItem = (props) => {
   const [playlistName, setPlaylistName] = useState(props.name)
-  const [renameMode, setRenameMode] = useState(props.enableRenameMode)
+  const [renameMode, setRenameMode] = useState(false)
   const { 
     viewPlaylist, 
     updateViewedPlaylist,
@@ -21,7 +23,6 @@ const MenuItem = (props) => {
     setRenameForStartedPlaylist 
   } = useContext(MenuContext)
   const newName = useRef("")
-  const itemRef = useRef()
 
   const updatePlaylistNameDisplay = async() => {
     const oldName = playlistName
@@ -40,7 +41,6 @@ const MenuItem = (props) => {
   }
 
   const doRename = async(oldName) => {
-    props.clearRenameRequestID()
     setPlaylistName(props.renameDuplicate(newName.current))
     const currentStartedPlaying = await localforage.getItem("_current_playlist_playing")
     setRenameForStartedPlaylist(
@@ -68,24 +68,6 @@ const MenuItem = (props) => {
   return (
     <div 
       className='menuItem' 
-      id={`pl_${playlistName}`} 
-      ref={itemRef}
-      onClick={async() => {
-        if(!renameMode){
-          const details = await localforage.getItem(`_playlist_details`)
-          viewPlaylist(
-            playlistName, 
-            details[playlistName]["allArtists"],
-            details[playlistName]["allSongs"].length,
-            details[playlistName]["totalLength"],
-            details[playlistName]["coverArt"])
-        }
-      }}
-      onContextMenu={(e) => {
-        e.preventDefault()
-        if(!renameMode)
-          props.positionContextMenu(e.clientX, e.clientY, itemRef)
-      }}
       onDragStart={() => props.setDraggedPlaylist(playlistName)}
       onDragEnd={() => props.rearrangePlaylists()}
       onDragOver={(e) => {
@@ -93,10 +75,25 @@ const MenuItem = (props) => {
         props.setDraggedPlaylistTarget(playlistName)
       }}
       onDragExit={() => props.setDraggedPlaylistTarget("")}
-      draggable={renameMode ? false : true}>
+      draggable={renameMode ? false : true}
+    >
       <div className="menuItemLeft">
-        <Icon color='lightgrey' size={25}/>
-        <button style={{ display: renameMode ? 'none' : 'flex' }}>
+        <ItemIcon color='lightgrey' size={25}/>
+        <button
+          onClick={async() => {
+            if(!renameMode){
+              const details = await localforage.getItem(`_playlist_details`)
+              viewPlaylist(
+                playlistName, 
+                details[playlistName]["allArtists"],
+                details[playlistName]["allSongs"].length,
+                details[playlistName]["totalLength"],
+                details[playlistName]["coverArt"]
+              )
+            }
+          }}
+          style={{ display: renameMode ? 'none' : 'flex', width: "125px" }}
+        >
           {playlistName}
         </button>
         <input className='renamePlaylistField' type={'text'} defaultValue={playlistName}
@@ -107,28 +104,39 @@ const MenuItem = (props) => {
         />
       </div>
       <div className="menuItemRight">
-        <button
-          className='confirmRename'
-          onClick={updatePlaylistNameDisplay}>
-          <ConfirmRename 
-            size={20} 
-            style={{ display: renameMode ? 'flex' : 'none' }}
-          />
-        </button>
-        <button
-          className='cancelRename'
-          onClick={() => {
-            props.clearRenameRequestID()
-            newName.current = ""
-            setRenameMode(false)
-            console.log("Renaming cancelled for:", `"${playlistName}"`)
-          }}
-        >
-          <CancelRename 
-            size={20}
-            style={{ display: renameMode ? 'flex' : 'none' }}
-          />
-        </button>
+        {
+        renameMode?
+          <div className='menuItemEditButtons'>
+            <button
+              className='confirmRename'
+              onClick={updatePlaylistNameDisplay}
+            >
+              <ConfirmRename size={20}/>
+            </button>
+            <button
+              className='cancelRename'
+              onClick={() => {
+                newName.current = ""
+                setRenameMode(false)
+                console.log("Renaming cancelled for:", `"${playlistName}"`)
+              }}
+            >
+              <CancelRename size={20}/>
+            </button>
+          </div> :
+          <div className='menuItemDefaultButtons'>
+            <button
+              onClick={() => setRenameMode(!renameMode)}
+            >
+              <Edit size={17}/>
+            </button>
+            <button
+              onClick={() => props.deletePlaylist(playlistName)}
+            >
+              <Trash size={17}/>
+            </button> 
+          </div>
+        }
       </div>
     </div>
   )

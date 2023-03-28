@@ -13,24 +13,18 @@ import { HiChevronRight as Open, HiChevronDown as Close } from 'react-icons/hi'
 import { MdOutlineAdd as Add } from 'react-icons/md'
 
 import MenuItem from './MenuItem/MenuItem'
-import MenuItemContextMenu from './MenuItemContextMenu/MenuItemContextMenu'
 import './PlaylistMenu.css'
 
 export const MenuItemContext = createContext()
 const PlaylistMenu = (props) => {
   const [dropdownOpened, setDropdownOpened] = useState(true)
   const [playlistList, setPlaylistList] = useState([])
-  const [menuCoordinates, setMenuCoordinates] = useState({x: 0, y: 0})
-  const [enableRenameMode, setEnableRenameMode] = useState(false)
-  const [renameRequestID, setRenameRequestID] = useState("")
   const [searchEntry, setSearchEntry] = useState("")
 
   const { removeViewedPlaylist, deletedPlaylist, updateDeletedPlaylist } = useContext(MenuContext)
 
   const draggedPlaylist = useRef("") 
   const draggedPlaylistTarget = useRef("")
-  const contextMenuRef = useRef()
-  const contextTargetRef = useRef("")
 
   useEffect(() => {
     const getPlaylists = async() => {
@@ -66,15 +60,9 @@ const PlaylistMenu = (props) => {
     })
   }
   
-  const handleSearch = (e) => {
+  const handleSearching = (e) => {
     setSearchEntry(e.target.value)
     setDropdownOpened(e.target.value != '' ? true : dropdownOpened)
-  }
-
-  const positionContextMenu = (xPos, yPos, ref) => {
-    contextTargetRef.current = ref.current
-    clearRenameRequestID()
-    setMenuCoordinates({x: xPos, y: yPos})
   }
 
   const renameDuplicate = (name) => {
@@ -85,32 +73,17 @@ const PlaylistMenu = (props) => {
     return name
   }
 
-  const getRenameRequest = (reqID) => {
-    setEnableRenameMode(true)
-    setRenameRequestID(reqID)
-    console.log("Rename request for:", reqID.split('_')[1])
-  }
-
-  const clearRenameRequestID = () => {
-    setRenameRequestID("")
-  }
-
   const replaceOldPlaylistName = (oldName, newName) => {
     let allNames = playlistList
     allNames[allNames.indexOf(oldName)] = newName
     setPlaylistList([...allNames])
   }
 
-  const getDeleteRequest = (reqID) => {
-    const name = reqID.split('_')[1]
-    if(!confirm(`Playlist "${name}" will be deleted. Press OK to proceed.`)) return
-    deletePlaylist(name)
-    removeViewedPlaylist(name)
-  }
-
   const deletePlaylist = async(name) => {
-    setPlaylistList(playlistList.filter((n) => n != name))
+    if(!confirm(`Playlist "${name}" will be deleted. Press OK to proceed.`)) return
+    removeViewedPlaylist(name)
     updateDeletedPlaylist(name)
+    setPlaylistList(playlistList.filter((n) => n != name))
     let playlists = await localforage.getItem("_playlist_all")
     let playlistDetails = await localforage.getItem("_playlist_details")
     playlists = playlists.filter((p) => p != name)
@@ -135,17 +108,12 @@ const PlaylistMenu = (props) => {
   
   const rearrangePlaylists = () => {
     rearrangeMenuItems([[...playlistList]], [setPlaylistList], draggedPlaylist, draggedPlaylistTarget)
-    setDraggedPlaylist("")
-    setDraggedPlaylistTarget("")
+    draggedPlaylist.current = ""
+    draggedPlaylistTarget.current = ""
   }
   
   return (
-    <aside className="playlistMenu"
-      onClick={(e) => {
-        (e.target.className != "renamePlaylistBtn" || e.target.className != "deletePlaylistBtn") && 
-          contextMenuRef.current.setInvisible()
-      }}
-    >
+    <aside className="playlistMenu">
       <div className="appName">
         <AppLogo color='#00d9ff' className="appLogo"/>
         Tunes
@@ -167,7 +135,7 @@ const PlaylistMenu = (props) => {
       <div className="playlistController">
         <div className="searchPlaylists">
           <Search size={20}/>
-          <input type="search" placeholder='Search playlists . . .' onInput={handleSearch}/>
+          <input type="search" placeholder='Search playlists . . .' onInput={handleSearching}/>
         </div>
         <div className="createPlaylistBtn">
           <div className="playlistDropdown">
@@ -189,28 +157,19 @@ const PlaylistMenu = (props) => {
         </div>
       </div>
       <div className="playlistContainer">
-        {playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
+        {
+        playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
           <MenuItem
             key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
             name={name}
-            enableRenameMode={renameRequestID === "pl_"+name ? enableRenameMode : false}
             renameDuplicate={renameDuplicate}
-            positionContextMenu={positionContextMenu}
+            deletePlaylist={deletePlaylist}
             setDraggedPlaylist={setDraggedPlaylist}
             setDraggedPlaylistTarget={setDraggedPlaylistTarget}
             rearrangePlaylists={rearrangePlaylists}
             replaceOldPlaylistName={replaceOldPlaylistName}
-            clearRenameRequestID={clearRenameRequestID}
           />)
         }
-        <MenuItemContextMenu
-          ref={contextMenuRef}
-          xPos={menuCoordinates.x}
-          yPos={menuCoordinates.y} 
-          targetElementID={contextTargetRef.current !== '' ? contextTargetRef.current.id : ""}
-          getRenameRequest={getRenameRequest}
-          getDeleteRequest={getDeleteRequest}
-        />
       </div>
     </aside>
   )

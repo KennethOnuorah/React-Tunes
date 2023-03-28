@@ -25,7 +25,8 @@
   flex-direction: row;
   align-items: start;
 }
-.menuItemLeft button, .menuItemRight button{
+.menuItemLeft button, 
+.menuItemRight button{
   display: flex;
   flex-wrap: wrap;
   hyphens: auto;
@@ -39,6 +40,17 @@
   background-color: transparent;
   transition: color 0.2s ease, opacity 0.2s ease;
 }
+.menuItemEditButtons, 
+.menuItemDefaultButtons{
+  display: flex;
+  flex-direction: row;
+  transition: color 0.2s ease-in-out;
+}
+.menuItemDefaultButtons button:hover{
+  cursor: pointer;
+  color: #00d9ff;
+}
+
 .renamePlaylistField{
   background-color: transparent;
   color: white;
@@ -47,15 +59,18 @@
   padding: 5px;
   width: 105px;
 }
-.menuItemLeft button:hover, .menuItemLeft button:focus{
+.menuItemLeft button:hover, 
+.menuItemLeft button:focus{
   color: #00d9ff;
   cursor: pointer;
 }
-.confirmRename:hover, .confirmRename:focus{
+.confirmRename:hover, 
+.confirmRename:focus{
   color: #00ff15;
   cursor: pointer;
 }
-.cancelRename:hover, .cancelRename:focus{
+.cancelRename:hover, 
+.cancelRename:focus{
   color: #ff3300;
   cursor: pointer;
 }
