@@ -27,7 +27,8 @@
   cursor: pointer;
   transition: opacity 0.2s ease, transform 0.1s ease;
 }
-.playBtn:hover{
+.playBtn:hover,
+.playBtn:focus{
   opacity: 0.6;
 }
 .playBtn:active{
@@ -55,7 +56,8 @@
   border: none;
   transition: opacity 0.2s ease, transform 0.1s ease;
 }
-.removeSongBtn:hover{
+.removeSongBtn:hover,
+.removeSongBtn:focus{
   opacity: 0.6;
 }
 .removeSongBtn:active{
@@ -63,4 +65,19 @@
 }
 .removeSongBtn:not(:active){
   transform: scale(1);
+}
+
+@keyframes glowing_neon_outline {
+  0%{
+    border: 2px solid aqua;
+    box-shadow: 0px 0px 4px 4px rgba(0, 255, 255, 0.658);
+  }
+  50%{
+    border: 2px solid rgba(0, 255, 255, 0.568);
+    box-shadow: 0px 0px 4px 4px rgba(0, 241, 241, 0.212);
+  }
+  100%{
+    border: 2px solid aqua;
+    box-shadow: 0px 0px 4px 4px rgba(0, 255, 255, 0.658);
+  }
 }

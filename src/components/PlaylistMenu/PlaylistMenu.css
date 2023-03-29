@@ -14,7 +14,7 @@ hr{
   bottom: 70px;
   background-color: rgb(23, 23, 23);
   color: white;
-  z-index: 99;
+  /* z-index: 99; */
   /* overflow-x: hidden; */
 }
 .appName{
@@ -32,7 +32,8 @@ hr{
   display: flex;
   flex-direction: column;
 }
-.appOptionSection button, .appOptionSection a{
+.appOptionSection button, 
+.appOptionSection a{
   display: flex;
   align-items: center;
   justify-content: start;
@@ -48,7 +49,8 @@ hr{
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .appOptionSection button:hover,
-.appOptionSection a:hover, .appOptionSection a:focus{
+.appOptionSection a:hover, 
+.appOptionSection a:focus{
   background-color: rgb(41, 41, 41);
   color: #00d9ff;
   cursor: pointer;
@@ -62,7 +64,8 @@ hr{
   display: flex;
   flex-direction: column;
 }
-.searchPlaylists, .createPlaylistBtn{
+.searchPlaylists, 
+.createPlaylistBtn{
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -91,7 +94,8 @@ hr{
   background-color: transparent;
   transition: opacity 0.2s ease;
 }
-.createPlaylistBtn button:hover, .createPlaylistBtn button:focus{
+.createPlaylistBtn button:hover, 
+.createPlaylistBtn button:focus{
   cursor: pointer;
   opacity: 0.6;
 }
@@ -99,6 +103,7 @@ hr{
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 0.25rem;
   transition: opacity 0.2s ease;
 }
 .playlistDropdown button:hover{

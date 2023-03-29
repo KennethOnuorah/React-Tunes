@@ -43,7 +43,7 @@ const PlaylistMenu = (props) => {
   }, [playlistList.join("")])
 
   useUpdateEffect(() => {
-    deletePlaylist(deletedPlaylist)
+    updateDeletedPlaylist(deletePlaylist)
   }, [deletedPlaylist])
 
   const createNewPlaylistDetails = async(name) => {
@@ -74,15 +74,14 @@ const PlaylistMenu = (props) => {
   }
 
   const replaceOldPlaylistName = (oldName, newName) => {
-    let allNames = playlistList
-    allNames[allNames.indexOf(oldName)] = newName
-    setPlaylistList([...allNames])
+    let playlists = playlistList
+    playlists[playlists.indexOf(oldName)] = newName
+    setPlaylistList([...playlists])
   }
 
   const deletePlaylist = async(name) => {
     if(!confirm(`Playlist "${name}" will be deleted. Press OK to proceed.`)) return
     removeViewedPlaylist(name)
-    updateDeletedPlaylist(name)
     setPlaylistList(playlistList.filter((n) => n != name))
     let playlists = await localforage.getItem("_playlist_all")
     let playlistDetails = await localforage.getItem("_playlist_details")
@@ -119,7 +118,11 @@ const PlaylistMenu = (props) => {
         Tunes
       </div>
       <div className="appOptionSection">
-        <a href="https://github.com/KennethOnuorah/React-Tunes?" target="_blank" rel="noopener noreferrer">
+        <a 
+          href="https://github.com/KennethOnuorah/React-Tunes?" 
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
           <GitHub color='lightgrey' size={20}/>
           Visit Repository
         </a>

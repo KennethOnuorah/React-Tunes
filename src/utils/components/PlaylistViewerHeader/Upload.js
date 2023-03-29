@@ -2,7 +2,8 @@ import * as localforage from 'localforage'
 import useArrayMerge from '../../general/ArrayMerge'
 import * as id3 from "id3js"
 
-async function uploadAudio(fileList, details, playlistUpdateMethod){
+async function uploadAudio(fileList, details, playlistUpdateMethod, setLoading){
+  setLoading(true)
   const playlistDetails = await localforage.getItem("_playlist_details")
   for(const file of fileList) {
     const tags = await id3.fromFile(file)
@@ -37,6 +38,7 @@ async function uploadAudio(fileList, details, playlistUpdateMethod){
     }
   }
   await localforage.setItem(`_playlist_details`, playlistDetails)
+  setLoading(false)
   console.log(`Updated playlist details (${new Date().toLocaleTimeString()})\n`, playlistDetails)
 }
 

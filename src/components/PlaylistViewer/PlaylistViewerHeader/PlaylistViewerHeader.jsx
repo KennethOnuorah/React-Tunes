@@ -1,4 +1,4 @@
-import { useEffect, useRef, useContext } from "react"
+import { useRef, useContext } from "react"
 
 import getConvertedTime from "../../../utils/general/getConvertedTime"
 import { uploadAudio, uploadImage } from "../../../utils/components/PlaylistViewerHeader/Upload"
@@ -13,12 +13,14 @@ import "./PlaylistViewerHeader.css"
 const PlaylistViewerHeader = (props) => {
   const fileUploadBtnRef = useRef()
   const songUploadBtnRef = useRef()
-  const { 
+  const {
+    setLoading,
     updateViewedPlaylist, 
     removeViewedPlaylist, 
     artistsText, 
     updateDeletedPlaylist, 
-    startNewPlaylist } = useContext(ViewerContext)
+    startNewPlaylist 
+  } = useContext(ViewerContext)
 
   const handleButtonClick = (ref) => ref.current.click()
 
@@ -74,7 +76,7 @@ const PlaylistViewerHeader = (props) => {
           accept=".mp3, .wav, .ogg, .flac"
           id="uploadSongs"
           ref={songUploadBtnRef}
-          onChange={(e) => {uploadAudio(e.target.files, props.details, updateViewedPlaylist)}}
+          onChange={(e) =>  uploadAudio(e.target.files, props.details, updateViewedPlaylist, setLoading)}
         />
         <button 
           htmlFor="uploadSongs"

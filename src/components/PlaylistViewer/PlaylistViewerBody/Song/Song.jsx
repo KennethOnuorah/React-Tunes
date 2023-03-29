@@ -10,7 +10,8 @@ import "./Song.css"
 const Song = (props) => {
   const base64Key = `${props.playlistName}: ${props.songArtist} - ${props.songName}`
   const [draggedOver, setDraggedOver] = useState(false)
-  const { updateDeletedSong } = useContext(ViewerContext)
+  const { updateDeletedSong, currentSong } = useContext(ViewerContext)
+
   return (
     <section
       className="song"
@@ -30,6 +31,7 @@ const Song = (props) => {
       style={{
         border: draggedOver ? props.darkTheme ? "2px solid white" : "2px solid black" : "0px solid transparent",
         backgroundColor: props.darkTheme ? "rgb(33, 33, 33)" : "rgb(243, 243, 243)",
+        animation: currentSong === base64Key ? "glowing_neon_outline 1.5s infinite" : ""
       }}
       draggable
     >
@@ -63,7 +65,7 @@ const Song = (props) => {
         <button
           className="removeSongBtn"
           onClick={async() => {
-            if(!confirm(`"${base64Key}" will be deleted from "${props.playlistName}." Press OK to confirm.`)) return
+            if(!confirm(`"${props.songArtist} - ${props.songName}" will be deleted from "${props.playlistName}." Press OK to confirm.`)) return
             updateDeletedSong(base64Key.split(": ")[1])
             props.deleteSong(
               props.playlistName, 

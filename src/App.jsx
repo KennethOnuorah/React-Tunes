@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet"
 
 import * as localforage from "localforage"
 
+import LoadingScreen from "./components/LoadingScreen/LoadingScreen"
 import PlaylistMenu from "./components/PlaylistMenu/PlaylistMenu"
 import PlaylistViewer from "./components/PlaylistViewer/PlaylistViewer"
 import MusicController from "./components/MusicController/MusicController"
@@ -14,6 +15,7 @@ const initialTheme = await localforage.getItem("_dark_theme")
 export const MenuContext = createContext()
 export const ViewerContext = createContext()
 function App() {
+  const [isLoading, setIsLoading] = useState(false)
   const [darkTheme, setDarkTheme] = useState(initialTheme)
   const [viewerOpen, setViewerOpen] = useState(false)
   const [details, setDetails] = useState({
@@ -26,13 +28,16 @@ function App() {
   const [artistsText, setArtistsText] = useState("")
   const [startedPlaylist, setStartedPlaylist] = useState("")
   const [renameForStartedPlaylist, setRenameForStartedPlaylist] = useState("")
+  const [currentSong, setCurrentSong] = useState("")
   const [chosenSong, setChosenSong] = useState("")
   const [deletedSong, setDeletedSong] = useState("")
   const [deletedPlaylist, setDeletedPlaylist] = useState("")
   const [rearrangementCount, setRearrangementCount] = useState(0)
 
+  const setLoading = (enabled) => setIsLoading(enabled)
   const toggleDarkTheme = () => setDarkTheme(!darkTheme)
   const startNewPlaylist = (name) => setStartedPlaylist(name)
+  const updateCurrentSong = (name) => setCurrentSong(name)
   const selectSong = (name) => setChosenSong(name)
   const updateDeletedSong = (name) => setDeletedSong(name)
   const updateDeletedPlaylist = (name) => setDeletedPlaylist(name)
@@ -96,12 +101,19 @@ function App() {
   }, [darkTheme])
 
   return (
-    <div className="App">
+    <div 
+      className="App"
+      onKeyDown={(e) => {
+        if(isLoading)
+          e.preventDefault()
+      }}
+    >
       <Helmet
         bodyAttributes={{
           style: `background-color: ${!darkTheme ? "white" : "#303030"}`,
         }}
       />
+      <LoadingScreen isLoading={isLoading}/>
       <MenuContext.Provider 
         value={{
           viewPlaylist, 
@@ -116,12 +128,14 @@ function App() {
       </MenuContext.Provider>
       <ViewerContext.Provider
         value={{
+          setLoading,
           updateViewedPlaylist, 
           removeViewedPlaylist,
           artistsText,
           updateDeletedPlaylist,
           details,
           startNewPlaylist,
+          currentSong,
           selectSong,
           updateDeletedSong,
           updateRearrangementCount
@@ -137,6 +151,7 @@ function App() {
         renameForStartedPlaylist={renameForStartedPlaylist}
         artistsText={artistsText}
         details={details}
+        updateCurrentSong={updateCurrentSong}
         chosenSong={chosenSong}
         deletedSong={deletedSong}
         deletedPlaylist={deletedPlaylist}

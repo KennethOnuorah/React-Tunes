@@ -2,7 +2,7 @@
   position: relative;
   display: flex;
   flex-direction: row;
-  align-items: start;
+  align-items: center;
   justify-content: space-between;
   background-color: transparent;
   padding: 15px 15px 15px 45px;
@@ -10,7 +10,7 @@
 }
 .menuItem:hover{
   background-color: rgb(41, 41, 41);
-  cursor: pointer;
+  /* cursor: pointer; */
   color: #00d9ff;
 }
 .menuItemLeft{
@@ -44,9 +44,11 @@
 .menuItemDefaultButtons{
   display: flex;
   flex-direction: row;
+  gap: 0.25rem;
   transition: color 0.2s ease-in-out;
 }
-.menuItemDefaultButtons button:hover{
+.menuItemDefaultButtons button:hover, 
+.menuItemDefaultButtons button:focus{
   cursor: pointer;
   color: #00d9ff;
 }
