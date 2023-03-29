@@ -28,7 +28,7 @@ const PlaylistViewerBody = (props) => {
   const setDraggedSong = (name) => draggedSong.current = name
   const setDraggedSongTarget = (name) => draggedSongTarget.current = name
 
-  //Temporary function; Too ugly and bloated. Will need rewrite in the future
+  //This function is ugly, I know...
   const rearrangeSongs = async() => {
     let details = await localforage.getItem("_playlist_details")
     let songList = details[props.details.name]["allSongs"]

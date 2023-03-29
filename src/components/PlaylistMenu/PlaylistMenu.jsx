@@ -37,7 +37,7 @@ const PlaylistMenu = (props) => {
   useUpdateEffect(() => {
     const savePlaylistList = async() => {
       await localforage.setItem("_playlist_all", [...playlistList])
-      console.log(`Playlist list saved (${new Date().toLocaleTimeString()})\n`, playlistList)
+      // console.log(`Playlist list saved (${new Date().toLocaleTimeString()})\n`, playlistList)
     }
     savePlaylistList()
   }, [playlistList.join("")])
@@ -95,7 +95,7 @@ const PlaylistMenu = (props) => {
       if(!key.includes(`${name}: `)) return
       await localforage.removeItem(key)
     }
-    console.log("Deleted playlist:", `"${name}"`)
+    // console.log("Deleted playlist:", `"${name}"`)
   }
 
   const setDraggedPlaylist = (name) => {

@@ -67,7 +67,7 @@ const MusicController = (props) => {
 
   const createNewQueues = async(playlistName, songChoice="") => {
     if(playlistName == "") return
-    console.log("STARTING PLAYLIST:", playlistName)
+    // console.log("STARTING PLAYLIST:", playlistName)
     await localforage.setItem("_current_playlist_playing", playlistName)
     setSong({type: "set_current_playlist", playlist: playlistName})
     const details = await localforage.getItem("_playlist_details")
@@ -83,7 +83,7 @@ const MusicController = (props) => {
     audioRef.current.src = await localforage.getItem(`${playlistName}: ${firstSong}`)
     document.title = firstSong
     props.updateCurrentSong(`${playlistName}: ${firstSong}`)
-    console.log("Now playing song:", firstSong)
+    // console.log("Now playing song:", firstSong)
     audioRef.current.play()
   }
 
@@ -121,7 +121,8 @@ const MusicController = (props) => {
       audioRef.current.src = await localforage.getItem(`${song.currentPlaylist}: ${firstSong}`)
       audioRef.current.currentTime = 0
       document.title = firstSong
-      console.log("Now playing song:", firstSong)
+      props.updateCurrentSong(`${song.currentPlaylist}: ${firstSong}`)
+      // console.log("Now playing song:", firstSong)
       audioRef.current.play()
     }else{
       audioRef.current.pause()
@@ -152,7 +153,7 @@ const MusicController = (props) => {
     audioRef.current.src = await localforage.getItem(`${song.currentPlaylist}: ${newSong}`)
     document.title = newSong
     props.updateCurrentSong(`${song.currentPlaylist}: ${newSong}`)
-    console.log(`Now playing ${playDirection ? "next" : "previous"} song:`, newSong)
+    // console.log(`Now playing ${playDirection ? "next" : "previous"} song:`, newSong)
     setControls({type: "set_paused", isPaused: false})
     audioRef.current.play()
   }
@@ -166,7 +167,7 @@ const MusicController = (props) => {
       audioRef.current.src = await localforage.getItem(`${song.currentPlaylist}: ${songChoice}`)
       document.title = newSong
       props.updateCurrentSong(`${song.currentPlaylist}: ${newSong}`)
-      console.log(`Now playing song:`, newSong)
+      // console.log(`Now playing song:`, newSong)
       setControls({type: "set_paused", isPaused: false})
       audioRef.current.play()
     }else{
@@ -178,7 +179,7 @@ const MusicController = (props) => {
     switch (skipDirection.toLowerCase()) {
       case "right":
         if(onLastSong && controls.currentPlayMode == "No looping") return
-        console.log(`Skipping song: ${song.currentSong}`)
+        // console.log(`Skipping song: ${song.currentSong}`)
         playNextSong(skipDirection)
         break
       case "left":
@@ -189,7 +190,7 @@ const MusicController = (props) => {
         }
         break
       default:
-        console.warn(`"${skipDirection}" is not a valid skip direction.`)
+        // console.warn(`"${skipDirection}" is not a valid skip direction.`)
         break
     }
   }

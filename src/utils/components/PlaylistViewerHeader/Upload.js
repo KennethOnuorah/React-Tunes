@@ -30,7 +30,7 @@ async function uploadAudio(fileList, details, playlistUpdateMethod, setLoading){
         }, details.name)
       }
       reader.readAsDataURL(file)
-      console.log(`Uploading song: ${tags.artist} - ${tags.title}`)
+      // console.log(`Uploading song: ${tags.artist} - ${tags.title}`)
       playlistDetails[details.name]["allArtists"].push(tags.artist)
       playlistDetails[details.name]["allSongs"].push(tags.title)
     }else{
@@ -39,7 +39,7 @@ async function uploadAudio(fileList, details, playlistUpdateMethod, setLoading){
   }
   await localforage.setItem(`_playlist_details`, playlistDetails)
   setLoading(false)
-  console.log(`Updated playlist details (${new Date().toLocaleTimeString()})\n`, playlistDetails)
+  // console.log(`Updated playlist details (${new Date().toLocaleTimeString()})\n`, playlistDetails)
 }
 
 async function uploadImage(file, details, playlistUpdateMethod){
