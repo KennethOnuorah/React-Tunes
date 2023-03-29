@@ -58,4 +58,4 @@ Acceptable audio file types:
 ![readme_preview](readme_app_screenshot.png)
 
 ## **License** 📜
-[**MIT**](https://github.com/KennethOnuorah/React-Tunes/blob/master/LICENSE)
+[**MIT**](https://github.com/KennethOnuorah/React-Tunes/blob/main/LICENSE)
