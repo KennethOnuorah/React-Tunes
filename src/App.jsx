@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet"
 
 import * as localforage from "localforage"
 
+import HomeScreen from "./components/HomeScreen/HomeScreen"
 import LoadingScreen from "./components/LoadingScreen/LoadingScreen"
 import PlaylistMenu from "./components/PlaylistMenu/PlaylistMenu"
 import PlaylistViewer from "./components/PlaylistViewer/PlaylistViewer"
@@ -17,6 +18,7 @@ export const ViewerContext = createContext()
 function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [darkTheme, setDarkTheme] = useState(initialTheme)
+  const [sideMenuOpen, setSideMenuOpen] = useState(false)
   const [viewerOpen, setViewerOpen] = useState(false)
   const [details, setDetails] = useState({
     name: "-",
@@ -35,6 +37,7 @@ function App() {
   const [rearrangementCount, setRearrangementCount] = useState(0)
 
   const setLoading = (enabled) => setIsLoading(enabled)
+  const toggleSideMenuOpen = () => setSideMenuOpen(!sideMenuOpen)
   const toggleDarkTheme = () => setDarkTheme(!darkTheme)
   const startNewPlaylist = (name) => setStartedPlaylist(name)
   const updateCurrentSong = (name) => setCurrentSong(name)
@@ -124,7 +127,12 @@ function App() {
           setRenameForStartedPlaylist,
           renameForStartedPlaylist,
       }}>
-        <PlaylistMenu darkTheme={darkTheme} toggleDarkTheme={toggleDarkTheme} />
+        <PlaylistMenu 
+          darkTheme={darkTheme} 
+          toggleDarkTheme={toggleDarkTheme} 
+          sideMenuOpen={sideMenuOpen}
+          toggleSideMenuOpen={toggleSideMenuOpen}
+        />
       </MenuContext.Provider>
       <ViewerContext.Provider
         value={{
@@ -141,9 +149,10 @@ function App() {
           updateRearrangementCount
         }}
       >
-        {viewerOpen && (
-          <PlaylistViewer darkTheme={darkTheme} details={details} />
-        )}
+        {viewerOpen ? 
+          <PlaylistViewer darkTheme={darkTheme} details={details} sideMenuOpen={sideMenuOpen}/> :
+          <HomeScreen darkTheme={darkTheme} sideMenuOpen={sideMenuOpen}/>
+        }
       </ViewerContext.Provider>
       <MusicController 
         darkTheme={darkTheme}
