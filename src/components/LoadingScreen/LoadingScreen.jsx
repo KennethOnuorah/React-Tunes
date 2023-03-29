@@ -8,7 +8,7 @@ const LoadingScreen = ({isLoading}) => {
         display: isLoading ? "flex" : "none"
       }}
     >
-      <img src="../src/images/loading.gif" width={50}/>
+      <img src="/images/loading.gif" width={50}/>
     </div>
   )
 }

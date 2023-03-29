@@ -21,7 +21,7 @@ const MusicController = (props) => {
     controls.queues.shuffled.indexOf(song.currentSong) == controls.queues.shuffled.length - 1 :
     controls.queues.ordered.indexOf(song.currentSong) == controls.queues.ordered.length - 1
   const audioRef = useRef()
-  const currentPlaylistCoverRef = useRef("../src/images/default_album_cover.png")
+  const currentPlaylistCoverRef = useRef("/images/default_album_cover.png")
   const playbackBarRef = useRef()
   const volumeAdjusterRef = useRef()
   const volumeLevelBeforeMute = useRef(1)
