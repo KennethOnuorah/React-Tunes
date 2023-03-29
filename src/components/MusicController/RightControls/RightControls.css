@@ -37,7 +37,9 @@
   transition: filter 0.2s ease, transform 0.1s ease;
 }
 .playModeControls button:hover, 
-.volumeControls button:hover{
+.volumeControls button:hover,
+.playModeControls button:focus, 
+.volumeControls button:focus{
   filter: opacity(0.65);
 }
 .playModeControls button:active, 

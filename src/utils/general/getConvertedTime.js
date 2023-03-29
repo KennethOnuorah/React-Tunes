@@ -1,4 +1,4 @@
-export default function getConvertedTime(seconds, digitalFormat=false){
+export default function getConvertedTime(seconds=0, digitalFormat=false){
   seconds = parseInt(seconds)
   let sec = 0
   let min = 0

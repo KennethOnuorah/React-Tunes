@@ -16,6 +16,7 @@ import './MenuItem.css'
 const MenuItem = (props) => {
   const [playlistName, setPlaylistName] = useState(props.name)
   const [renameMode, setRenameMode] = useState(false)
+  const [hoveredOver, setHoveredOver] = useState(false)
   const { 
     viewPlaylist, 
     updateViewedPlaylist,
@@ -124,16 +125,28 @@ const MenuItem = (props) => {
               <CancelRename size={20}/>
             </button>
           </div> :
-          <div className='menuItemDefaultButtons'>
+          <div
+            className='menuItemDefaultButtons'
+            onMouseOver={() => setHoveredOver(true)}
+            onFocus={() => setHoveredOver(true)}
+            onMouseLeave={() => setHoveredOver(false)}
+            onBlur={() => setHoveredOver(false)}
+            style={{
+              opacity: hoveredOver ? "1" : "0",
+              transition: "opacity 0.1s ease-in-out"
+            }}
+          >
             <button
+              title='Rename playlist'
               onClick={() => setRenameMode(!renameMode)}
             >
-              <Edit size={17}/>
+              <Edit size={20}/>
             </button>
             <button
+              title='Delete playlist'
               onClick={() => props.deletePlaylist(playlistName)}
             >
-              <Trash size={17}/>
+              <Trash size={20}/>
             </button> 
           </div>
         }
