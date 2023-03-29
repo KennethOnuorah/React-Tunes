@@ -55,7 +55,7 @@ const PlaylistMenu = (props) => {
         allSongs: [],
         allSongDurations: [],
         totalLength: 0,
-        coverArt: "../src/images/default_album_cover.png",
+        coverArt: "/images/default_album_cover.png",
       }
     })
   }
