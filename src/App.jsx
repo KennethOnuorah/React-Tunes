@@ -12,12 +12,11 @@ import MusicController from "./components/MusicController/MusicController"
 
 import "./App.css"
 
-const initialTheme = await localforage.getItem("_dark_theme")
 export const MenuContext = createContext()
 export const ViewerContext = createContext()
 function App() {
   const [isLoading, setIsLoading] = useState(false)
-  const [darkTheme, setDarkTheme] = useState(initialTheme)
+  const [darkTheme, setDarkTheme] = useState(false)
   const [sideMenuOpen, setSideMenuOpen] = useState(false)
   const [viewerOpen, setViewerOpen] = useState(false)
   const [details, setDetails] = useState({
@@ -80,6 +79,14 @@ function App() {
     })
     setViewerOpen(false)
   }
+
+  useEffect(() => {
+    const setTheme = async() => {
+      const initialTheme = await localforage.getItem("_dark_theme")
+      setDarkTheme(initialTheme)
+    }
+    setTheme()
+  }, [])
 
   useEffect(() => {
     const uniqueList = Array.from(new Set(details.artists))
