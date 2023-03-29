@@ -13,7 +13,12 @@ const PlaylistViewer = (props) => {
   }, [props.details])
 
   return (
-    <section className="playlistViewerContainer">
+    <section 
+      className="playlistViewerContainer"
+      style={{
+        left: props.sideMenuOpen ? "280px" : "51px"
+      }}
+    >
       <PlaylistViewerHeader darkTheme={props.darkTheme} details={viewedDetails}/>
       <div className="viewerBodyBorder">
         <div className={`borderLabels${props.darkTheme ? " darkThemeBorderLabels" : ""}`}>

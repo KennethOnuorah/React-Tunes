@@ -1,7 +1,7 @@
 .playlistViewerContainer{
   position: absolute;
   top: 0px;
-  left: 280px;
+  /* left: 280px; */
   right: 0%;
   overflow-x: hidden;
 }

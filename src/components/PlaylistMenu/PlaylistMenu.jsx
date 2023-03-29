@@ -5,7 +5,7 @@ import { rearrangeMenuItems } from '../../utils/components/PlaylistMenu/Rearrang
 
 import * as localforage from "localforage"
 
-import { SiApplemusic as AppLogo } from 'react-icons/si'
+import { FiMenu as OpenMenu } from 'react-icons/fi'
 import { BiSun as Sun, BiMoon as Moon } from 'react-icons/bi'
 import { BsGithub as GitHub } from 'react-icons/bs'
 import { SlMagnifier as Search } from 'react-icons/sl'
@@ -43,7 +43,7 @@ const PlaylistMenu = (props) => {
   }, [playlistList.join("")])
 
   useUpdateEffect(() => {
-    updateDeletedPlaylist(deletePlaylist)
+    deletePlaylist(deletedPlaylist, true)
   }, [deletedPlaylist])
 
   const createNewPlaylistDetails = async(name) => {
@@ -79,8 +79,9 @@ const PlaylistMenu = (props) => {
     setPlaylistList([...playlists])
   }
 
-  const deletePlaylist = async(name) => {
-    if(!confirm(`Playlist "${name}" will be deleted. Press OK to proceed.`)) return
+  const deletePlaylist = async(name, deletedFromViewer=false) => {
+    if(!deletedFromViewer)
+      if(!confirm(`Playlist "${name}" will be deleted. Press OK to proceed.`)) return
     removeViewedPlaylist(name)
     setPlaylistList(playlistList.filter((n) => n != name))
     let playlists = await localforage.getItem("_playlist_all")
@@ -112,68 +113,82 @@ const PlaylistMenu = (props) => {
   }
   
   return (
-    <aside className="playlistMenu">
-      <div className="appName">
-        <AppLogo color='#00d9ff' className="appLogo"/>
-        Tunes
-      </div>
-      <div className="appOptionSection">
-        <a 
-          href="https://github.com/KennethOnuorah/React-Tunes?" 
-          target="_blank" 
-          rel="noopener noreferrer"
+    <aside 
+      className="playlistMenu"
+      style={{
+        width: props.sideMenuOpen ? "280px" : "51px"
+      }}
+    >
+      <div className="menuOpenButton">
+        <button
+          title='Toggle side menu'
+          onClick={() => props.toggleSideMenuOpen()}
         >
-          <GitHub color='lightgrey' size={20}/>
-          Visit Repository
-        </a>
-        <button onClick={() => props.toggleDarkTheme(!props.darkTheme)}>
-          {
-          !props.darkTheme ? 
-            <Moon color='lightgrey' size={20}/> : 
-            <Sun color='lightgrey' size={20}/>
-          }
-          Set {!props.darkTheme ? "Dark" : "Light"} Theme
+          <OpenMenu size={20}/>
         </button>
-      </div><hr/>
-      <div className="playlistController">
-        <div className="searchPlaylists">
-          <Search size={20}/>
-          <input type="search" placeholder='Search playlists . . .' onInput={handleSearching}/>
-        </div>
-        <div className="createPlaylistBtn">
-          <div className="playlistDropdown">
-            <button onClick={() => setDropdownOpened(!dropdownOpened)}>
-              {!dropdownOpened ? 
-                <Open size={20} color='lightgrey'/> : 
-                <Close size={20} color='lightgrey'/>}
+      </div>
+      {
+      props.sideMenuOpen && 
+        <>
+          <div className="appOptionSection">
+            <a 
+              href="https://github.com/KennethOnuorah/React-Tunes?" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <GitHub color='lightgrey' size={20}/>
+              Visit Repository
+            </a>
+            <button onClick={() => props.toggleDarkTheme(!props.darkTheme)}>
+              {
+              !props.darkTheme ? 
+                <Moon color='lightgrey' size={20}/> : 
+                <Sun color='lightgrey' size={20}/>
+              }
+              Set {!props.darkTheme ? "Dark" : "Light"} Theme
             </button>
-            Playlists
+          </div><hr/>
+          <div className="playlistController">
+            <div className="searchPlaylists">
+              <Search size={20}/>
+              <input type="search" placeholder='Search playlists . . .' onInput={handleSearching}/>
+            </div>
+            <div className="createPlaylistBtn">
+              <div className="playlistDropdown">
+                <button onClick={() => setDropdownOpened(!dropdownOpened)}>
+                  {!dropdownOpened ? 
+                    <Open size={20} color='lightgrey'/> : 
+                    <Close size={20} color='lightgrey'/>}
+                </button>
+                Playlists
+              </div>
+              <button title='Create new playlist'
+                onClick={() => {
+                  setDropdownOpened(true)
+                  setPlaylistList([renameDuplicate("New playlist"), ...playlistList])
+                  createNewPlaylistDetails(renameDuplicate("New playlist"))
+                }}>
+                <Add size={20} color='lightgrey'/>
+              </button>
+            </div>
           </div>
-          <button title='Create new playlist'
-            onClick={() => {
-              setDropdownOpened(true)
-              setPlaylistList([renameDuplicate("New playlist"), ...playlistList])
-              createNewPlaylistDetails(renameDuplicate("New playlist"))
-            }}>
-            <Add size={20} color='lightgrey'/>
-          </button>
-        </div>
-      </div>
-      <div className="playlistContainer">
-        {
-        playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
-          <MenuItem
-            key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
-            name={name}
-            renameDuplicate={renameDuplicate}
-            deletePlaylist={deletePlaylist}
-            setDraggedPlaylist={setDraggedPlaylist}
-            setDraggedPlaylistTarget={setDraggedPlaylistTarget}
-            rearrangePlaylists={rearrangePlaylists}
-            replaceOldPlaylistName={replaceOldPlaylistName}
-          />)
-        }
-      </div>
+          <div className="playlistContainer">
+            {
+            playlistList.map((name) => (dropdownOpened && name.toLowerCase().includes(searchEntry.toLowerCase())) && 
+              <MenuItem
+                key={`${name}_${Math.ceil(Math.pow(10, 10) * Math.random() * Math.random())}`} 
+                name={name}
+                renameDuplicate={renameDuplicate}
+                deletePlaylist={deletePlaylist}
+                setDraggedPlaylist={setDraggedPlaylist}
+                setDraggedPlaylistTarget={setDraggedPlaylistTarget}
+                rearrangePlaylists={rearrangePlaylists}
+                replaceOldPlaylistName={replaceOldPlaylistName}
+              />)
+            }
+          </div>
+        </>
+      }
     </aside>
   )
 }

@@ -1,0 +1,18 @@
+.homeScreen{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0px;
+  /* left: 280px; */
+  right: 0%;
+  height: 90%;
+  overflow-x: hidden;
+}
+
+.appLogo{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: xx-large;
+}
