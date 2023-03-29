@@ -55,7 +55,7 @@ const MenuItem = (props) => {
     updatePlaylistDetails(oldName, newName.current)
     updateViewedPlaylist({name: props.renameDuplicate(newName.current)}, playlistName)
     props.replaceOldPlaylistName(oldName, newName.current)
-    console.log("Renaming completed for:", `"${oldName}"`, "\nNew name is:", `"${newName.current}"`)
+    // console.log("Renaming completed for:", `"${oldName}"`, "\nNew name is:", `"${newName.current}"`)
     setRenameMode(false)
   }
 
@@ -119,7 +119,7 @@ const MenuItem = (props) => {
               onClick={() => {
                 newName.current = ""
                 setRenameMode(false)
-                console.log("Renaming cancelled for:", `"${playlistName}"`)
+                // console.log("Renaming cancelled for:", `"${playlistName}"`)
               }}
             >
               <CancelRename size={20}/>

@@ -98,7 +98,7 @@ function App() {
   useUpdateEffect(() => {
     const saveTheme = async () => {
       await localforage.setItem("_dark_theme", darkTheme)
-      console.log("Dark theme has been set to", darkTheme)
+      // console.log("Dark theme has been set to", darkTheme)
     }
     saveTheme()
   }, [darkTheme])
